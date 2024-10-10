@@ -8,15 +8,13 @@ extern Node *tree_root;
 extern int is_ok;
 extern Node *null_node;
 
-char type_map[49][16] = {"FLOAT", "INT", "TYPE", "STRUCT", "RETURN", "IF", "ELSE", "WHILE", "SEMI", "COMMA", "LC", "RC",
-                         "ID",
-                         "ASSIGNOP", "AND", "OR", "RELOP", "PLUS", "MINUS", "MUL", "DIV", "NOT", "LP", "RP", "LB", "RB",
-                         "DOT",
-                         "STAR", "Program", "ExtDefList", "ExtDef", "ExtDecList", "Specifier", "StructSpecifier",
-                         "OptTag", "Tag",
-                         "VarDec", "FunDec", "VarList", "ParamDec", "CompSt", "StmtList", "Stmt", "DefList", "Def",
-                         "DecList", "Dec", "Exp",
-                         "Args"};
+char type_map[49][16] = {"FLOAT", "INT", "TYPE", "STRUCT", "RETURN", "IF", "ELSE", "WHILE", "SEMI",
+                         "COMMA", "LC", "RC", "ID", "ASSIGNOP", "AND", "OR", "RELOP", "PLUS",
+                         "MINUS", "MUL", "DIV", "NOT", "LP", "RP", "LB", "RB", "DOT", "STAR",
+                         "Program", "ExtDefList", "ExtDef", "ExtDecList", "Specifier",
+                         "StructSpecifier", "OptTag", "Tag", "VarDec", "FunDec", "VarList",
+                         "ParamDec", "CompSt", "StmtList", "Stmt", "DefList", "Def", "DecList",
+                         "Dec", "Exp", "Args"};
 
 void print_tree(Node *root, int depth) {
     if (root == NULL) return;

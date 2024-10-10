@@ -59,8 +59,6 @@ enum type_t {
     _OTHER,
 };
 
-extern char type_map[49][16];
-
 typedef struct Node {
     union val_t {
         char id[64];
@@ -82,7 +80,6 @@ typedef struct Node {
 #endif
 
 #define NODE_INIT(TYPE)                \
-    lexprintf(#TYPE " %s\n", yytext);  \
     Node *node = malloc(sizeof(Node)); \
     node->type = _##TYPE;              \
     node->lineno = yylineno;           \

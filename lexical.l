@@ -3,6 +3,7 @@
 #include "syntax.tab.h"
 extern int is_ok;
 %}
+%option yylineno
 INT                         0|[1-9][0-9]*
 FLOAT                       [0-9]+\.[0-9]+
 TYPE                        (int|float)
@@ -146,7 +147,7 @@ RBCOM                       "*/"
                             }
 {ID}                        {
                                 NODE_INIT(ID)
-                                strcpy(yytext, node->val.id);
+                                strcpy(node->val.id, yytext);
                                 NODE_RETURN(ID);
                             }
 {LCOM}                      {
