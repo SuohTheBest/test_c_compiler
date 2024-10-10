@@ -2,10 +2,8 @@
 #include "yystype.h"
 
 extern void yyrestart(FILE *inputfile);
-
 extern Node *tree_root;
-extern int is_ok;
-extern Node *null_node;
+extern int error_flag;
 
 char type_map[49][16] = {"FLOAT", "INT", "TYPE", "STRUCT", "RETURN", "IF", "ELSE", "WHILE", "SEMI",
                          "COMMA", "LC", "RC", "ID", "ASSIGNOP", "AND", "OR", "RELOP", "PLUS",
@@ -18,10 +16,6 @@ char type_map[49][16] = {"FLOAT", "INT", "TYPE", "STRUCT", "RETURN", "IF", "ELSE
 void print_tree(Node *root, int depth) {
     if (root == NULL) return;
     enum type_t type = root->type;
-    if (type == _OTHER) {
-        print_tree(root->brother, depth);
-        return;
-    }
     for (int i = 0; i < depth; i++)
         printf("  ");
     printf("%s", type_map[type]);
@@ -46,16 +40,10 @@ void print_tree(Node *root, int depth) {
 }
 
 int main(int argc, char **argv) {
-    null_node = malloc(sizeof(Node));
-    null_node->type = _OTHER;
-    if (argc <= 1) return 1;
+    assert(argc > 1);
     FILE *f = fopen(argv[1], "r");
-    if (!f) {
-        perror(argv[1]);
-        return 1;
-    }
     yyrestart(f);
     yyparse();
-    if (is_ok) print_tree(tree_root, 0);
+    if (error_flag == 0) print_tree(tree_root, 0);
     return 0;
 }

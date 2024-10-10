@@ -3,17 +3,13 @@
 #include "yystype.h"
 
 void yyerror(char *msg);
-Node *tree_root = NULL;
-int is_ok = 1;
-Node **n[8];
-Node *ptr;
-Node *null_node;
+int error_flag = 0;
+Node *tree_root=NULL;
 %}
 
 /* declared tokens */
 %token FLOAT INT TYPE STRUCT RETURN IF ELSE WHILE SEMI COMMA LC RC ID
 %token ASSIGNOP AND OR RELOP PLUS MINUS DIV NOT STAR LP RP LB RB DOT
-%token OTHER
 %right ASSIGNOP
 %left AND OR
 %left RELOP
@@ -25,384 +21,249 @@ Node *null_node;
 %nonassoc ELSE
 %%
 Program :                   ExtDefList                      {
-                                                                n[0] = &$$;
-                                                                n[1] = &$1;
-                                                                build1(Program);
+                                                                Node **args[8] = {&$$, &$1};
+                                                                BUILDTREE(Program, 1);
                                                                 tree_root=$$;
                                                             }
 ;
 ExtDefList :                ExtDef ExtDefList               {
-                                                                n[0] = &$$;
-                                                                n[1] = &$1;
-                                                                n[2] = &$2;
-                                                                build2(ExtDefList)
+                                                                Node **args[8] = {&$$, &$1, &$2};
+                                                                BUILDTREE(ExtDefList, 2);
                                                             }
-                            |                               {$$ = null_node;}
+                            |                               { $$ = NULL; }
 ;
 ExtDef :                    Specifier ExtDecList SEMI       {
-                                                                n[0] = &$$;
-                                                                n[1] = &$1;
-                                                                n[2] = &$2;
-                                                                n[3] = &$3;
-                                                                build3(ExtDef)
+                                                                Node **args[8] = {&$$, &$1, &$2, &$3};
+                                                                BUILDTREE(ExtDef, 3);
                                                             }
                             | Specifier SEMI                {
-                                                                n[0] = &$$;
-                                                                n[1] = &$1;
-                                                                n[2] = &$2;
-                                                                build2(ExtDef)
+                                                                Node **args[8] = {&$$, &$1, &$2};
+                                                                BUILDTREE(ExtDef, 2);
                                                             }
                             | Specifier FunDec CompSt       {
-                                                                n[0] = &$$;
-                                                                n[1] = &$1;
-                                                                n[2] = &$2;
-                                                                n[3] = &$3;
-                                                                build3(ExtDef)
+                                                                Node **args[8] = {&$$, &$1, &$2, &$3};
+                                                                BUILDTREE(ExtDef, 3);
                                                             }
 ;
 ExtDecList :                VarDec                          {
-                                                                n[0] = &$$;
-                                                                n[1] = &$1;
-                                                                build1(ExtDecList)
+                                                                Node **args[8] = {&$$, &$1};
+                                                                BUILDTREE(ExtDecList, 1);
                                                             }
                             | VarDec COMMA ExtDecList       {
-                                                                n[0] = &$$;
-                                                                n[1] = &$1;
-                                                                n[2] = &$2;
-                                                                n[3] = &$3;
-                                                                build3(ExtDecList)
+                                                                Node **args[8] = {&$$, &$1, &$2, &$3};
+                                                                BUILDTREE(ExtDecList, 3);
                                                             }
 ;
 Specifier :                 TYPE                            {
-                                                                n[0] = &$$;
-                                                                n[1] = &$1;
-                                                                build1(Specifier)
+                                                                Node **args[8] = {&$$, &$1};
+                                                                BUILDTREE(Specifier, 1);
                                                             }
                             | StructSpecifier               {
-                                                                n[0] = &$$;
-                                                                n[1] = &$1;
-                                                                build1(Specifier)
+                                                                Node **args[8] = {&$$, &$1};
+                                                                BUILDTREE(Specifier, 1);
                                                             }
 ;
 StructSpecifier :           STRUCT OptTag LC DefList RC     {
-                                                                n[0] = &$$;
-                                                                n[1] = &$1;
-                                                                n[2] = &$2;
-                                                                n[3] = &$3;
-                                                                n[4] = &$4;
-                                                                n[5] = &$5;
-                                                                build5(StructSpecifier)
+                                                                Node **args[8] = {&$$, &$1, &$2, &$3, &$4, &$5};
+                                                                BUILDTREE(StructSpecifier, 5);
                                                             }
                             | STRUCT Tag                    {
-                                                                n[0] = &$$;
-                                                                n[1] = &$1;
-                                                                n[2] = &$2;
-                                                                build2(StructSpecifier)
+                                                                Node **args[8] = {&$$, &$1, &$2};
+                                                                BUILDTREE(StructSpecifier, 2);
                                                             }
 ;
 OptTag :                    ID                              {
-                                                                n[0] = &$$;
-                                                                n[1] = &$1;
-                                                                build1(OptTag)
+                                                                Node **args[8] = {&$$, &$1};
+                                                                BUILDTREE(OptTag, 1);
                                                             }
-                            |                               {$$ = null_node;}
+                            |                               { $$ = NULL; }
 ;
 Tag :                       ID                              {
-                                                                n[0] = &$$;
-                                                                n[1] = &$1;
-                                                                build1(Tag)
+                                                                Node **args[8] = {&$$, &$1};
+                                                                BUILDTREE(Tag, 1);
                                                             }
 ;
 VarDec :                    ID                              {
-                                                                n[0] = &$$;
-                                                                n[1] = &$1;
-                                                                build1(VarDec)
+                                                                Node **args[8] = {&$$, &$1};
+                                                                BUILDTREE(VarDec, 1);
                                                             }
                             | VarDec LB INT RB              {
-                                                                n[0] = &$$;
-                                                                n[1] = &$1;
-                                                                n[2] = &$2;
-                                                                n[3] = &$3;
-                                                                n[4] = &$4;
-                                                                build4(VarDec)
+                                                                Node **args[8] = {&$$, &$1, &$2, &$3, &$4};
+                                                                BUILDTREE(VarDec, 4);
                                                             }
 ;
 FunDec :                    ID LP VarList RP                {
-                                                                n[0] = &$$;
-                                                                n[1] = &$1;
-                                                                n[2] = &$2;
-                                                                n[3] = &$3;
-                                                                n[4] = &$4;
-                                                                build4(FunDec)
+                                                                Node **args[8] = {&$$, &$1, &$2, &$3, &$4};
+                                                                BUILDTREE(FunDec, 4);
                                                             }
                             | ID LP RP                      {
-                                                                n[0] = &$$;
-                                                                n[1] = &$1;
-                                                                n[2] = &$2;
-                                                                n[3] = &$3;
-                                                                build3(FunDec)
+                                                                Node **args[8] = {&$$, &$1, &$2, &$3};
+                                                                BUILDTREE(FunDec, 3);
                                                             }
 ;
 VarList :                   ParamDec COMMA VarList          {
-                                                                n[0] = &$$;
-                                                                n[1] = &$1;
-                                                                n[2] = &$2;
-                                                                n[3] = &$3;
-                                                                build3(VarList)
+                                                                Node **args[8] = {&$$, &$1, &$2, &$3};
+                                                                BUILDTREE(VarList, 3);
                                                             }
                             | ParamDec                      {
-                                                                n[0] = &$$;
-                                                                n[1] = &$1;
-                                                                build1(VarList)
+                                                                Node **args[8] = {&$$, &$1};
+                                                                BUILDTREE(VarList, 1);
                                                             }
 ;
 ParamDec :                  Specifier VarDec                {
-                                                                n[0] = &$$;
-                                                                n[1] = &$1;
-                                                                n[2] = &$2;
-                                                                build2(ParamDec)
+                                                                Node **args[8] = {&$$, &$1, &$2};
+                                                                BUILDTREE(ParamDec, 2);
                                                             }
 ;
 CompSt :                    LC DefList StmtList RC          {
-                                                                n[0] = &$$;
-                                                                n[1] = &$1;
-                                                                n[2] = &$2;
-                                                                n[3] = &$3;
-                                                                n[4] = &$4;
-                                                                build4(CompSt)
+                                                                Node **args[8] = {&$$, &$1, &$2, &$3, &$4};
+                                                                BUILDTREE(CompSt, 4);
                                                             }
+                            | error RC                      {}
 ;
 StmtList :                  Stmt StmtList                   {
-                                                                n[0] = &$$;
-                                                                n[1] = &$1;
-                                                                n[2] = &$2;
-                                                                build2(StmtList)
+                                                                Node **args[8] = {&$$, &$1, &$2};
+                                                                BUILDTREE(StmtList, 2);
                                                             }
-                            |                               {$$ = null_node;}
+                            |                               { $$ = NULL; }
 ;
 Stmt :                      Exp SEMI                        {
-                                                                n[0] = &$$;
-                                                                n[1] = &$1;
-                                                                n[2] = &$2;
-                                                                build2(Stmt)
+                                                                Node **args[8] = {&$$, &$1, &$2};
+                                                                BUILDTREE(Stmt, 2);
                                                             }
                             | CompSt                        {
-                                                                n[0] = &$$;
-                                                                n[1] = &$1;
-                                                                build1(Stmt)
+                                                                Node **args[8] = {&$$, &$1};
+                                                                BUILDTREE(Stmt, 1);
                                                             }
                             | RETURN Exp SEMI               {
-                                                                n[0] = &$$;
-                                                                n[1] = &$1;
-                                                                n[2] = &$2;
-                                                                n[3] = &$3;
-                                                                build3(Stmt)
+                                                                Node **args[8] = {&$$, &$1, &$2, &$3};
+                                                                BUILDTREE(Stmt, 3);
                                                             }
                             | IF LP Exp RP Stmt %prec LOWER_THAN_ELSE
                                                             {
-                                                                n[0] = &$$;
-                                                                n[1] = &$1;
-                                                                n[2] = &$2;
-                                                                n[3] = &$3;
-                                                                n[4] = &$4;
-                                                                n[5] = &$5;
-                                                                build5(Stmt)
+                                                                Node **args[8] = {&$$, &$1, &$2, &$3, &$4, &$5};
+                                                                BUILDTREE(Stmt, 5);
                                                             }
                             | IF LP Exp RP Stmt ELSE Stmt   {
-                                                                n[0] = &$$;
-                                                                n[1] = &$1;
-                                                                n[2] = &$2;
-                                                                n[3] = &$3;
-                                                                n[4] = &$4;
-                                                                n[5] = &$5;
-                                                                n[6] = &$6;
-                                                                n[7] = &$7;
-                                                                build7(Stmt)
+                                                                Node **args[8] = {&$$, &$1, &$2, &$3, &$4, &$5, &$6, &$7};
+                                                                BUILDTREE(Stmt, 7);
                                                             }
                             | WHILE LP Exp RP Stmt          {
-                                                                n[0] = &$$;
-                                                                n[1] = &$1;
-                                                                n[2] = &$2;
-                                                                n[3] = &$3;
-                                                                n[4] = &$4;
-                                                                n[5] = &$5;
-                                                                build5(Stmt)
+                                                                Node **args[8] = {&$$, &$1, &$2, &$3, &$4, &$5};
+                                                                BUILDTREE(Stmt, 5);
                                                             }
+                            | error SEMI                    {}
 ;
 DefList :                   Def DefList                     {
-                                                                n[0] = &$$;
-                                                                n[1] = &$1;
-                                                                n[2] = &$2;
-                                                                build2(DefList)
+                                                                Node **args[8] = {&$$, &$1, &$2};
+                                                                BUILDTREE(DefList, 2);
                                                             }
-                            |                               {$$ = null_node;}
+                            |                               { $$ = NULL; }
 ;
 Def :                       Specifier DecList SEMI          {
-                                                                n[0] = &$$;
-                                                                n[1] = &$1;
-                                                                n[2] = &$2;
-                                                                n[3] = &$3;
-                                                                build3(Def)
+                                                                Node **args[8] = {&$$, &$1, &$2, &$3};
+                                                                BUILDTREE(Def, 3);
                                                             }
 ;
 DecList :                   Dec                             {
-                                                                n[0] = &$$;
-                                                                n[1] = &$1;
-                                                                build1(DecList)
+                                                                Node **args[8] = {&$$, &$1};
+                                                                BUILDTREE(DecList, 1);
                                                             }
                             | Dec COMMA DecList             {
-                                                                n[0] = &$$;
-                                                                n[1] = &$1;
-                                                                n[2] = &$2;
-                                                                n[3] = &$3;
-                                                                build3(DecList)
+                                                                Node **args[8] = {&$$, &$1, &$2, &$3};
+                                                                BUILDTREE(DecList, 3);
                                                             }
 ;
 Dec :                       VarDec                          {
-                                                                n[0] = &$$;
-                                                                n[1] = &$1;
-                                                                build1(Dec)
+                                                                Node **args[8] = {&$$, &$1};
+                                                                BUILDTREE(Dec, 1);
                                                             }
                             | VarDec ASSIGNOP Exp           {
-                                                                n[0] = &$$;
-                                                                n[1] = &$1;
-                                                                n[2] = &$2;
-                                                                n[3] = &$3;
-                                                                build3(Dec)
+                                                                Node **args[8] = {&$$, &$1, &$2, &$3};
+                                                                BUILDTREE(Dec, 3);
                                                             }
 ;
 Exp :                       Exp ASSIGNOP Exp                {
-                                                                n[0] = &$$;
-                                                                n[1] = &$1;
-                                                                n[2] = &$2;
-                                                                n[3] = &$3;
-                                                                build3(Exp)
+                                                                Node **args[8] = {&$$, &$1, &$2, &$3};
+                                                                BUILDTREE(Exp, 3);
                                                             }
                             | Exp AND Exp                   {
-                                                                n[0] = &$$;
-                                                                n[1] = &$1;
-                                                                n[2] = &$2;
-                                                                n[3] = &$3;
-                                                                build3(Exp)
+                                                                Node **args[8] = {&$$, &$1, &$2, &$3};
+                                                                BUILDTREE(Exp, 3);
                                                             }
                             | Exp OR Exp                    {
-                                                                n[0] = &$$;
-                                                                n[1] = &$1;
-                                                                n[2] = &$2;
-                                                                n[3] = &$3;
-                                                                build3(Exp)
+                                                                Node **args[8] = {&$$, &$1, &$2, &$3};
+                                                                BUILDTREE(Exp, 3);
                                                             }
                             | Exp RELOP Exp                 {
-                                                                n[0] = &$$;
-                                                                n[1] = &$1;
-                                                                n[2] = &$2;
-                                                                n[3] = &$3;
-                                                                build3(Exp)
+                                                                Node **args[8] = {&$$, &$1, &$2, &$3};
+                                                                BUILDTREE(Exp, 3);
                                                             }
                             | Exp PLUS Exp                  {
-                                                                n[0] = &$$;
-                                                                n[1] = &$1;
-                                                                n[2] = &$2;
-                                                                n[3] = &$3;
-                                                                build3(Exp)
+                                                                Node **args[8] = {&$$, &$1, &$2, &$3};
+                                                                BUILDTREE(Exp, 3);
                                                             }
                             | Exp MINUS Exp                 {
-                                                                n[0] = &$$;
-                                                                n[1] = &$1;
-                                                                n[2] = &$2;
-                                                                n[3] = &$3;
-                                                                build3(Exp)
+                                                                Node **args[8] = {&$$, &$1, &$2, &$3};
+                                                                BUILDTREE(Exp, 3);
                                                             }
                             | Exp STAR Exp                  {
-                                                                n[0] = &$$;
-                                                                n[1] = &$1;
-                                                                n[2] = &$2;
-                                                                n[3] = &$3;
-                                                                build3(Exp)
+                                                                Node **args[8] = {&$$, &$1, &$2, &$3};
+                                                                BUILDTREE(Exp, 3);
                                                             }
                             | Exp DIV Exp                   {
-                                                                n[0] = &$$;
-                                                                n[1] = &$1;
-                                                                n[2] = &$2;
-                                                                n[3] = &$3;
-                                                                build3(Exp)
+                                                                Node **args[8] = {&$$, &$1, &$2, &$3};
+                                                                BUILDTREE(Exp, 3);
                                                             }
                             | LP Exp RP                     {
-                                                                n[0] = &$$;
-                                                                n[1] = &$1;
-                                                                n[2] = &$2;
-                                                                n[3] = &$3;
-                                                                build3(Exp)
+                                                                Node **args[8] = {&$$, &$1, &$2, &$3};
+                                                                BUILDTREE(Exp, 3);
                                                             }
                             | MINUS Exp                     {
-                                                                n[0] = &$$;
-                                                                n[1] = &$1;
-                                                                n[2] = &$2;
-                                                                build2(Exp)
+                                                                Node **args[8] = {&$$, &$1, &$2};
+                                                                BUILDTREE(Exp, 2);
                                                             }
                             | NOT Exp                       {
-                                                                n[0] = &$$;
-                                                                n[1] = &$1;
-                                                                n[2] = &$2;
-                                                                build2(Exp)
+                                                                Node **args[8] = {&$$, &$1, &$2};
+                                                                BUILDTREE(Exp, 2);
                                                             }
                             | ID LP Args RP                 {
-                                                                n[0] = &$$;
-                                                                n[1] = &$1;
-                                                                n[2] = &$2;
-                                                                n[3] = &$3;
-                                                                n[4] = &$4;
-                                                                build4(Exp)
+                                                                Node **args[8] = {&$$, &$1, &$2, &$3, &$4};
+                                                                BUILDTREE(Exp, 4);
                                                             }
                             | ID LP RP                      {
-                                                                n[0] = &$$;
-                                                                n[1] = &$1;
-                                                                n[2] = &$2;
-                                                                n[3] = &$3;
-                                                                build3(Exp)
+                                                                Node **args[8] = {&$$, &$1, &$2, &$3};
+                                                                BUILDTREE(Exp, 3);
                                                             }
                             | Exp LB Exp RB                 {
-                                                                n[0] = &$$;
-                                                                n[1] = &$1;
-                                                                n[2] = &$2;
-                                                                n[3] = &$3;
-                                                                n[4] = &$4;
-                                                                build4(Exp)
+                                                                Node **args[8] = {&$$, &$1, &$2, &$3, &$4};
+                                                                BUILDTREE(Exp, 4);
                                                             }
                             | Exp DOT ID                    {
-                                                                n[0] = &$$;
-                                                                n[1] = &$1;
-                                                                n[2] = &$2;
-                                                                n[3] = &$3;
-                                                                build3(Exp)
+                                                                Node **args[8] = {&$$, &$1, &$2, &$3};
+                                                                BUILDTREE(Exp, 3);
                                                             }
                             | ID                            {
-                                                                n[0] = &$$;
-                                                                n[1] = &$1;
-                                                                build1(Exp)
+                                                                Node **args[8] = {&$$, &$1};
+                                                                BUILDTREE(Exp, 1);
                                                             }
                             | INT                           {
-                                                                n[0] = &$$;
-                                                                n[1] = &$1;
-                                                                build1(Exp)
+                                                                Node **args[8] = {&$$, &$1};
+                                                                BUILDTREE(Exp, 1);
                                                             }
                             | FLOAT                         {
-                                                                n[0] = &$$;
-                                                                n[1] = &$1;
-                                                                build1(Exp)
+                                                                Node **args[8] = {&$$, &$1};
+                                                                BUILDTREE(Exp, 1);
                                                             }
+                            | error RP                      {}
 ;
 Args :                      Exp COMMA Args                  {
-                                                                n[0] = &$$;
-                                                                n[1] = &$1;
-                                                                n[2] = &$2;
-                                                                n[3] = &$3;
-                                                                build3(Args)
+                                                                Node **args[8] = {&$$, &$1, &$2, &$3};
+                                                                BUILDTREE(Args, 3);
                                                             }
                             | Exp                           {
-                                                                n[0] = &$$;
-                                                                n[1] = &$1;
-                                                                build1(Args)
+                                                                Node **args[8] = {&$$, &$1};
+                                                                BUILDTREE(Args, 1);
                                                             }
 ;
 %%

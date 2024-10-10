@@ -1,7 +1,7 @@
 %{
 #include "yystype.h"
 #include "syntax.tab.h"
-extern int is_ok;
+extern int error_flag;
 %}
 %option yylineno
 INT                         0|[1-9][0-9]*
@@ -38,142 +38,141 @@ RBCOM                       "*/"
 [ \r\t\n]                   {}
 {INT}                       {
                                 NODE_INIT(INT)
-                                node->val.i_val = atoi(yytext);
-                                NODE_RETURN(INT)
+                                yylval->val.i_val = atoi(yytext);
+                                return INT;
                             }
 {FLOAT}                     {
                                 NODE_INIT(FLOAT)
-                                node->val.f_val = atof(yytext);
-                                NODE_RETURN(FLOAT)
+                                yylval->val.f_val = atof(yytext);
+                                return FLOAT;
                             }
 {SEMI}                      {
                                 NODE_INIT(SEMI)
-                                NODE_RETURN(SEMI)
+                                return SEMI;
                             }
 {COMMA}                     {
                                 NODE_INIT(COMMA)
-                                NODE_RETURN(COMMA)
+                                return COMMA;
                             }
 {ASSIGNOP}                  {
                                 NODE_INIT(ASSIGNOP)
-                                NODE_RETURN(ASSIGNOP)
+                                return ASSIGNOP;
                             }
 {RELOP}                     {
                                 NODE_INIT(RELOP)
-                                NODE_RETURN(RELOP)
+                                return RELOP;
                             }
 {PLUS}                      {
                                 NODE_INIT(PLUS)
-                                NODE_RETURN(PLUS)
+                                return PLUS;
                             }
 {MINUS}                     {
                                 NODE_INIT(MINUS)
-                                NODE_RETURN(MINUS)
+                                return MINUS;
                             }
 {STAR}                      {
                                 NODE_INIT(STAR)
-                                NODE_RETURN(STAR)
+                                return STAR;
                             }
 {DIV}                       {
                                 NODE_INIT(DIV)
-                                NODE_RETURN(DIV)
+                                return DIV;
                             }
 {AND}                       {
                                 NODE_INIT(AND)
-                                NODE_RETURN(AND)
+                                return AND;
                             }
 {OR}                        {
                                 NODE_INIT(OR)
-                                NODE_RETURN(OR)
+                                return OR;
                             }
 {DOT}                       {
                                 NODE_INIT(DOT)
-                                NODE_RETURN(DOT)
+                                return DOT;
                             }
 {NOT}                       {
                                 NODE_INIT(NOT)
-                                NODE_RETURN(NOT)
+                                return NOT;
                             }
 {TYPE}                      {
                                 NODE_INIT(TYPE)
                                 if(strcmp(yytext,"int")==0)
-                                    node->val.i_val= 0;
-                                else node->val.i_val = 1;
-                                NODE_RETURN(TYPE)
+                                    yylval->val.i_val= 0;
+                                else yylval->val.i_val = 1;
+                                return TYPE;
                             }
 {LP}                        {
                                 NODE_INIT(LP)
-                                NODE_RETURN(LP)
+                                return LP;
                             }
 {RP}                        {
                                 NODE_INIT(RP)
-                                NODE_RETURN(RP)
+                                return RP;
                             }
 {LB}                        {
                                 NODE_INIT(LB)
-                                NODE_RETURN(LB)
+                                return LB;
                             }
 {RB}                        {
                                 NODE_INIT(RB)
-                                NODE_RETURN(RB)
+                                return RB;
                             }
 {LC}                        {
                                 NODE_INIT(LC)
-                                NODE_RETURN(LC)
+                                return LC;
                             }
 {RC}                        {
                                 NODE_INIT(RC)
-                                NODE_RETURN(RC)
+                                return RC;
                             }
 {STRUCT}                    {
                                 NODE_INIT(STRUCT)
-                                NODE_RETURN(STRUCT)
+                                return STRUCT;
                             }
 {RETURN}                    {
                                 NODE_INIT(RETURN)
-                                NODE_RETURN(RETURN)
+                                return RETURN;
                             }
 {IF}                        {
                                 NODE_INIT(IF)
-                                NODE_RETURN(IF)
+                                return IF;
                             }
 {ELSE}                      {
                                 NODE_INIT(ELSE)
-                                NODE_RETURN(ELSE)
+                                return ELSE;
                             }
 {WHILE}                     {
                                 NODE_INIT(WHILE)
-                                NODE_RETURN(WHILE)
+                                return WHILE;
                             }
 {ID}                        {
                                 NODE_INIT(ID)
-                                strcpy(node->val.id, yytext);
-                                NODE_RETURN(ID);
+                                strcpy(yylval->val.id, yytext);
+                                return ID;
                             }
 {LCOM}                      {
                                 char c = input();
                                 while (c != '\n' && c != EOF) c = input();
-                                return OTHER;
+                                return 0;
                             }
 {LBCOM}                     {
                                 char c1 = input(), c2 = input();
                                 while (c2 != '\n' && c2 != EOF){
-                                    if(c1=='*' && c2=='/') return OTHER;
-                                    c1 = c2;
-                                    c2 = input();
+                                    if(c1=='*' && c2=='/') return 0;
+                                    c1 = c2, c2 = input();
                                 }
-                                is_ok = 0;
+                                error_flag = 1;
                                 printf("Error type B at Line %d: Missing '*/'\n", yylineno);
-                                return OTHER;
+                                return 0;
                             }
 {RBCOM}                     {
-                                is_ok = 0;
-                                printf("Error type B at Line %d: Syntax Error.\n", yylineno);
-                                return OTHER;
+                                error_flag = 1;
+                                printf("Error type B at Line %d: Missing '/*'\n", yylineno);
+                                return 0;
                             }
 .                           {
                                 printf("Error type A at Line %d: Mysterious characters \'%s\'\n", yylineno, yytext);
-                                is_ok = 0;
-                                return OTHER;
+                                error_flag = 1;
+                                return 0;
                             }
 %%
