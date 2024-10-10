@@ -13,4 +13,4 @@ step4:
 	./scanner test
 
 clean:
-	rm -rf lex.yy.c syntax.tab.h syntax.tab.c syntax.output
+	rm -rf lex.yy.c syntax.tab.h syntax.tab.c syntax.output scanner

@@ -57,33 +57,8 @@ int main(int argc, char **argv) {
         perror(argv[1]);
         return 1;
     }
-
-//    Node *t0, *t1, *t2, *t3, *ptr;
-//    Node **n0 = &t0, **n1 = &t1, **n2 = &t2, **n3 = &t3;
-//    Node *tmp = malloc(sizeof(Node));
-//    tmp->child=NULL;
-//    tmp->brother=NULL;
-//    *n1 = tmp;
-//    *n2 = tmp;
-//    *n3 = tmp;
-//    tmp->type = _DOT;
-//    printf("Program" " \n");
-//    Node *node = malloc(sizeof(Node));
-//    node->type = _Program;
-//    node->lineno = (*n1)->lineno;
-//    node->child = *n1;
-//    node->brother = ((void *) 0);
-//    *n0 = node;
-//    ptr = *n1;
-//    while (ptr->brother != ((void *) 0)) ptr = ptr->brother;
-//    ptr->brother = *n2;
-//    ptr = *n2;
-//    while (ptr->brother != ((void *) 0)) ptr = ptr->brother;
-//    ptr->brother = *n3;
-//    print_tree(*n0, 0);
     yyrestart(f);
     yyparse();
-//    while (yylex() != 0);
     if (is_ok) print_tree(tree_root, 0);
     return 0;
 }
