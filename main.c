@@ -1,6 +1,5 @@
 #include "syntax.tab.h"
 #include "yystype.h"
-#include <stdio.h>
 
 extern void yyrestart(FILE *inputfile);
 
