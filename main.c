@@ -1,9 +1,11 @@
 #include "syntax.tab.h"
 #include "yystype.h"
-
+#ifdef DEBUG
+#define YYDEBUG 1
+#endif
 extern void yyrestart(FILE *inputfile);
 extern Node *tree_root;
-extern int error_flag;
+extern int error_flag, yydebug;
 
 char type_map[49][16] = {"FLOAT", "INT", "TYPE", "STRUCT", "RETURN", "IF", "ELSE", "WHILE", "SEMI",
                          "COMMA", "LC", "RC", "ID", "ASSIGNOP", "AND", "OR", "RELOP", "PLUS",
@@ -40,6 +42,9 @@ void print_tree(Node *root, int depth) {
 }
 
 int main(int argc, char **argv) {
+#ifdef DEBUG
+    yydebug = 1;
+#endif
     assert(argc > 1);
     FILE *f = fopen(argv[1], "r");
     yyrestart(f);

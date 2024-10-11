@@ -3,7 +3,7 @@
 #include "yystype.h"
 
 void yyerror(char *msg);
-int error_flag = 0;
+int error_flag = 0, last_error = -1;
 Node *tree_root=NULL;
 %}
 
@@ -127,7 +127,8 @@ StmtList :                  Stmt StmtList                   {
                                                             }
                             |                               { $$ = NULL; }
 ;
-Stmt :                      Exp SEMI                        {
+Stmt :                      error SEMI                    {}
+                            |Exp SEMI                        {
                                                                 Node **args[8] = {&$$, &$1, &$2};
                                                                 BUILDTREE(Stmt, 2);
                                                             }
@@ -152,7 +153,6 @@ Stmt :                      Exp SEMI                        {
                                                                 Node **args[8] = {&$$, &$1, &$2, &$3, &$4, &$5};
                                                                 BUILDTREE(Stmt, 5);
                                                             }
-                            | error SEMI                    {}
 ;
 DefList :                   Def DefList                     {
                                                                 Node **args[8] = {&$$, &$1, &$2};
@@ -256,6 +256,8 @@ Exp :                       Exp ASSIGNOP Exp                {
                                                                 BUILDTREE(Exp, 1);
                                                             }
                             | error RP                      {}
+                            | error RB                      {}
+                            | error ASSIGNOP                {}
 ;
 Args :                      Exp COMMA Args                  {
                                                                 Node **args[8] = {&$$, &$1, &$2, &$3};
@@ -268,5 +270,8 @@ Args :                      Exp COMMA Args                  {
 ;
 %%
 void yyerror(char *msg) {
-    fprintf(stderr, "error: %s\n", msg);
+    error_flag = 1;
+    if(yylineno==last_error) return;
+    last_error = yylineno;
+    printf("Error type B at Line %d: %s\n", yylineno, msg);
 }
