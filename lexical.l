@@ -2,6 +2,8 @@
 #include "yystype.h"
 #include "syntax.tab.h"
 extern int error_flag;
+extern int has_a_error;
+extern void add_error(int lineno);
 %}
 %option yylineno
 INT                         0|[1-9][0-9]*
@@ -12,6 +14,9 @@ RETURN                      return
 IF                          if
 ELSE                        else
 WHILE                       while
+LCOM                        "//"
+LBCOM                       "/*"
+RBCOM                       "*/"
 SEMI                        ";"
 COMMA                       ","
 ASSIGNOP                    "="
@@ -31,9 +36,6 @@ RB                          \]
 LC                          \{
 RC                          \}
 ID                          [a-zA-Z_][a-zA-Z0-9_]*
-LCOM                        "//"
-LBCOM                       "/*"
-RBCOM                       "*/"
 %%
 [ \r\t\n]                   {}
 {INT}                       {
@@ -49,6 +51,28 @@ RBCOM                       "*/"
 {SEMI}                      {
                                 NODE_INIT(SEMI)
                                 return SEMI;
+                            }
+{LCOM}                      {
+                                char c = input();
+                                while (c != '\n' && c != EOF)
+                                {
+                                    c = input();
+                                }
+                            }
+{LBCOM}                     {
+                                char c1 = input(), c2 = input();
+                                int flag = 0;
+                                while (c2 != EOF){
+                                    if(c1=='*' && c2=='/') {
+                                        flag = 1;
+                                        break;
+                                    }
+                                    c1 = c2, c2 = input();
+                                }
+                                if(!flag)add_error(yylineno);
+                            }
+{RBCOM}                     {
+                                add_error(yylineno);
                             }
 {COMMA}                     {
                                 NODE_INIT(COMMA)
@@ -150,29 +174,9 @@ RBCOM                       "*/"
                                 strcpy(yylval->val.id, yytext);
                                 return ID;
                             }
-{LCOM}                      {
-                                char c = input();
-                                while (c != '\n' && c != EOF) c = input();
-                                return 0;
-                            }
-{LBCOM}                     {
-                                char c1 = input(), c2 = input();
-                                while (c2 != '\n' && c2 != EOF){
-                                    if(c1=='*' && c2=='/') return 0;
-                                    c1 = c2, c2 = input();
-                                }
-                                error_flag = 1;
-                                printf("Error type B at Line %d: Missing '*/'\n", yylineno);
-                                return 0;
-                            }
-{RBCOM}                     {
-                                error_flag = 1;
-                                printf("Error type B at Line %d: Missing '/*'\n", yylineno);
-                                return 0;
-                            }
 .                           {
                                 printf("Error type A at Line %d: Mysterious characters \'%s\'\n", yylineno, yytext);
-                                error_flag = 1;
+                                has_a_error = 1;
                                 return 0;
                             }
 %%

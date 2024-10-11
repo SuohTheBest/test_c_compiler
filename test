@@ -1,4 +1,10 @@
-int main() {
-    int i = 1;
-    int j = ~i;
-}
+int main()
+{
+/*
+comment
+/*
+nested comment
+*/
+*/
+int i = 1;
+ }

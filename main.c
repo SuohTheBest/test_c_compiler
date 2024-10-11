@@ -1,11 +1,15 @@
 #include "syntax.tab.h"
 #include "yystype.h"
+
 #ifdef DEBUG
 #define YYDEBUG 1
 #endif
+
 extern void yyrestart(FILE *inputfile);
+
 extern Node *tree_root;
-extern int error_flag, yydebug;
+extern int error_flag, yydebug, has_a_error, cnt_errorb;
+extern int error_lineno[1024];
 
 char type_map[49][16] = {"FLOAT", "INT", "TYPE", "STRUCT", "RETURN", "IF", "ELSE", "WHILE", "SEMI",
                          "COMMA", "LC", "RC", "ID", "ASSIGNOP", "AND", "OR", "RELOP", "PLUS",
@@ -41,14 +45,28 @@ void print_tree(Node *root, int depth) {
     print_tree(root->brother, depth);
 }
 
+void print_error() {
+    if (has_a_error) {
+        error_flag = 1;
+        return;
+    } else if (cnt_errorb > 0) {
+        error_flag = 1;
+        for (int i = 0; i < cnt_errorb; ++i) {
+            printf("Error type B at Line %d: Syntax error.\n", error_lineno[i]);
+        }
+    }
+}
+
 int main(int argc, char **argv) {
 #ifdef DEBUG
     yydebug = 1;
 #endif
     assert(argc > 1);
+    memset(error_lineno, 0, sizeof(error_lineno));
     FILE *f = fopen(argv[1], "r");
     yyrestart(f);
     yyparse();
+    print_error();
     if (error_flag == 0) print_tree(tree_root, 0);
     return 0;
 }

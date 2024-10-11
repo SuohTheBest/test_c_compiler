@@ -3,8 +3,15 @@
 #include "yystype.h"
 
 void yyerror(char *msg);
-int error_flag = 0, last_error = -1;
+int error_flag = 0;
 Node *tree_root=NULL;
+int error_lineno[1024], cnt_errorb = 0;
+int has_a_error = 0;
+
+void add_error(int lineno) {
+    if (cnt_errorb == 0 || error_lineno[cnt_errorb - 1] != lineno)
+        error_lineno[cnt_errorb++] = lineno;
+}
 %}
 
 /* declared tokens */
@@ -76,7 +83,7 @@ OptTag :                    ID                              {
                                                                 Node **args[8] = {&$$, &$1};
                                                                 BUILDTREE(OptTag, 1);
                                                             }
-                            |                               { $$ = NULL; }
+                            |                               {   $$ = NULL; }
 ;
 Tag :                       ID                              {
                                                                 Node **args[8] = {&$$, &$1};
@@ -127,8 +134,8 @@ StmtList :                  Stmt StmtList                   {
                                                             }
                             |                               { $$ = NULL; }
 ;
-Stmt :                      error SEMI                    {}
-                            |Exp SEMI                        {
+Stmt :                      error SEMI                      {}
+                            |Exp SEMI                       {
                                                                 Node **args[8] = {&$$, &$1, &$2};
                                                                 BUILDTREE(Stmt, 2);
                                                             }
@@ -270,8 +277,5 @@ Args :                      Exp COMMA Args                  {
 ;
 %%
 void yyerror(char *msg) {
-    error_flag = 1;
-    if(yylineno==last_error) return;
-    last_error = yylineno;
-    printf("Error type B at Line %d: %s\n", yylineno, msg);
+    add_error(yylineno);
 }

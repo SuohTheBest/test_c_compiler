@@ -5,14 +5,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
 #define YYSTYPE Node *
 
 // clang-format off
 enum type_t {
-    _FLOAT, _INT, _TYPE, _STRUCT, _RETURN, _IF, _ELSE, _WHILE, _SEMI, _COMMA, _LC, _RC, _ID, 
-    _ASSIGNOP, _AND, _OR, _RELOP, _PLUS, _MINUS, _MUL, _DIV, _NOT, _LP, _RP, _LB, _RB, _DOT, _STAR, 
-    _Program, _ExtDefList, _ExtDef, _ExtDecList, _Specifier, _StructSpecifier, _OptTag, _Tag, 
-    _VarDec, _FunDec, _VarList, _ParamDec, _CompSt, _StmtList, _Stmt, _DefList, _Def, _DecList, 
+    _FLOAT, _INT, _TYPE, _STRUCT, _RETURN, _IF, _ELSE, _WHILE, _SEMI, _COMMA, _LC, _RC, _ID,
+    _ASSIGNOP, _AND, _OR, _RELOP, _PLUS, _MINUS, _MUL, _DIV, _NOT, _LP, _RP, _LB, _RB, _DOT, _STAR,
+    _Program, _ExtDefList, _ExtDef, _ExtDecList, _Specifier, _StructSpecifier, _OptTag, _Tag,
+    _VarDec, _FunDec, _VarList, _ParamDec, _CompSt, _StmtList, _Stmt, _DefList, _Def, _DecList,
     _Dec, _Exp, _Args,
 };
 // clang-format on
