@@ -1,43 +1,10 @@
-// sample
-int global_var;
-
-// sample
-struct Point {
-    int x;
-    int y;
-};
-
-int main() {
-    // sample
-    int local_var = 5;
-    int result;
-    int num = 5;
-
-    // sample
-    struct Point p1;
-    p1.x = 3;
-    p1.y = 4;
-    print_point(p1);
-
-    // sample
-    result = sum(10, 20);
-
-    // sample
-    result = factorial(num);
-
-    return 0;
+in func(){
+    int b =;
 }
-
-// sample
-int sum(int a, int b) {
-    return a + b;
-}
-
-// sample
-int factorial(int n) {
-    if (n == 0) {
-        return 1;
-    } else {
-        return n * factorial(n - 1);
-    }
+int main()
+{
+    float a[10][2];
+    b[5 3];
+    a[5,3] = 1.5;
+    if (a[1][2] == 0) i = 1 else i = 0;
 }

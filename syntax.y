@@ -48,6 +48,7 @@ ExtDef :                    Specifier ExtDecList SEMI       {
                                                                 BUILDTREE(ExtDef, 3);
                                                             }
                             | Specifier error SEMI          {   yyerrok; }
+                            | error CompSt                  {   yyerrok; }
 ;
 ExtDecList :                VarDec                          {
                                                                 Node **args[8] = {&$$, &$1};
@@ -95,6 +96,7 @@ VarDec :                    ID                              {
                                                                 Node **args[8] = {&$$, &$1, &$2, &$3, &$4};
                                                                 BUILDTREE(VarDec, 4);
                                                             }
+                            | error RB                      { yyerrok; }
 ;
 FunDec :                    ID LP VarList RP                {
                                                                 Node **args[8] = {&$$, &$1, &$2, &$3, &$4};
@@ -104,7 +106,7 @@ FunDec :                    ID LP VarList RP                {
                                                                 Node **args[8] = {&$$, &$1, &$2, &$3};
                                                                 BUILDTREE(FunDec, 3);
                                                             }
-                            | error RP                      {   yyerrok; }
+                            | error RP                      {}
 ;
 VarList :                   ParamDec COMMA VarList          {
                                                                 Node **args[8] = {&$$, &$1, &$2, &$3};
@@ -124,7 +126,7 @@ CompSt :                    LC DefList StmtList RC          {
                                                                 Node **args[8] = {&$$, &$1, &$2, &$3, &$4};
                                                                 BUILDTREE(CompSt, 4);
                                                             }
-                            | error RC                      {   yyerrok; }
+                            | error RC                      {}
 ;
 StmtList :                  Stmt StmtList                   {
                                                                 Node **args[8] = {&$$, &$1, &$2};
@@ -157,12 +159,12 @@ Stmt :                      Exp SEMI                        {
                                                                 Node **args[8] = {&$$, &$1, &$2, &$3, &$4, &$5};
                                                                 BUILDTREE(Stmt, 5);
                                                             }
-                            | error SEMI                    {   yyerrok; }
-                            | error Stmt                    {   yyerrok; }
-                            | WHILE error RP Stmt           {   yyerrok; }
+                            | error SEMI                    {}
+                            | error Stmt                    {}
+                            | WHILE error RP Stmt           {}
                             | IF error RP Stmt %prec LOWER_THAN_ELSE
-                                                            {   yyerrok; }
-                            | IF error RP Stmt ELSE Stmt    {   yyerrok; }
+                                                            {}
+                            | IF error RP Stmt ELSE Stmt    {}
 ;
 DefList :                   Def DefList                     {
                                                                 Node **args[8] = {&$$, &$1, &$2};
@@ -174,7 +176,7 @@ Def :                       Specifier DecList SEMI          {
                                                                 Node **args[8] = {&$$, &$1, &$2, &$3};
                                                                 BUILDTREE(Def, 3);
                                                             }
-                            | Specifier error SEMI          {   yyerrok; }
+                            | Specifier error SEMI          {}
 ;
 DecList :                   Dec                             {
                                                                 Node **args[8] = {&$$, &$1};
