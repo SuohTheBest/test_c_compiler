@@ -6,17 +6,20 @@ extern int has_a_error;
 extern void add_error(int lineno);
 %}
 %option yylineno
+LCOM                        "//"
+LBCOM                       "/*"
+RBCOM                       "*/"
 INT                         0|[1-9][0-9]*
 FLOAT                       [0-9]+\.[0-9]+
+FLOAT_SCI                   ([0-9]+\.[0-9]*|\.[0-9]+)[eE][+-]?[0-9]+
+INT_OCT                     0[0-7]+
+INT_HEX                     0[xX][0-9A-Fa-f]+
 TYPE                        (int|float)
 STRUCT                      struct
 RETURN                      return
 IF                          if
 ELSE                        else
 WHILE                       while
-LCOM                        "//"
-LBCOM                       "/*"
-RBCOM                       "*/"
 SEMI                        ";"
 COMMA                       ","
 ASSIGNOP                    "="
@@ -38,20 +41,6 @@ RC                          \}
 ID                          [a-zA-Z_][a-zA-Z0-9_]*
 %%
 [ \r\t\n]                   {}
-{INT}                       {
-                                NODE_INIT(INT)
-                                yylval->val.i_val = atoi(yytext);
-                                return INT;
-                            }
-{FLOAT}                     {
-                                NODE_INIT(FLOAT)
-                                yylval->val.f_val = atof(yytext);
-                                return FLOAT;
-                            }
-{SEMI}                      {
-                                NODE_INIT(SEMI)
-                                return SEMI;
-                            }
 {LCOM}                      {
                                 char c = input();
                                 while (c != '\n' && c != EOF)
@@ -73,6 +62,32 @@ ID                          [a-zA-Z_][a-zA-Z0-9_]*
                             }
 {RBCOM}                     {
                                 add_error(yylineno);
+                            }
+{INT}                       {
+                                NODE_INIT(INT)
+                                yylval->val.i_val = atoi(yytext);
+                                return INT;
+                            }
+{FLOAT}                     {
+                                NODE_INIT(FLOAT)
+                                yylval->val.f_val = atof(yytext);
+                                return FLOAT;
+                            }
+{INT_OCT}                   {
+                                printf("Error type A at Line %d: Mysterious characters \'%s\'\n", yylineno, yytext);
+                                has_a_error = 1;
+                            }
+{INT_HEX}                   {
+                                printf("Error type A at Line %d: Mysterious characters \'%s\'\n", yylineno, yytext);
+                                has_a_error = 1;
+                            }
+{FLOAT_SCI}                 {
+                                printf("Error type A at Line %d: Mysterious characters \'%s\'\n", yylineno, yytext);
+                                has_a_error = 1;
+                            }
+{SEMI}                      {
+                                NODE_INIT(SEMI)
+                                return SEMI;
                             }
 {COMMA}                     {
                                 NODE_INIT(COMMA)
@@ -177,6 +192,5 @@ ID                          [a-zA-Z_][a-zA-Z0-9_]*
 .                           {
                                 printf("Error type A at Line %d: Mysterious characters \'%s\'\n", yylineno, yytext);
                                 has_a_error = 1;
-                                return 0;
                             }
 %%

@@ -135,7 +135,7 @@ StmtList :                  Stmt StmtList                   {
                             |                               { $$ = NULL; }
 ;
 Stmt :                      error SEMI                      {}
-                            |Exp SEMI                       {
+                            | Exp SEMI                      {
                                                                 Node **args[8] = {&$$, &$1, &$2};
                                                                 BUILDTREE(Stmt, 2);
                                                             }
