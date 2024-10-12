@@ -22,8 +22,8 @@ ELSE                        else
 WHILE                       while
 SEMI                        ";"
 COMMA                       ","
-ASSIGNOP                    "="
 RELOP                       >|<|>=|<=|==|!=
+ASSIGNOP                    "="
 PLUS                        "+"
 MINUS                       "-"
 STAR                        "*"

@@ -48,6 +48,7 @@ ExtDef :                    Specifier ExtDecList SEMI       {
                                                                 BUILDTREE(ExtDef, 3);
                                                             }
                             | Specifier error SEMI          {   yyerrok; }
+                            | error CompSt                  {   yyerrok; }
 ;
 ExtDecList :                VarDec                          {
                                                                 Node **args[8] = {&$$, &$1};
