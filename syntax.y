@@ -158,10 +158,10 @@ Stmt :                      Exp SEMI                        {
                                                                 BUILDTREE(Stmt, 5);
                                                             }
                             | error SEMI                    {   yyerrok; }
-                            | WHILE LP error RP Stmt        {   yyerrok; }
-                            | IF LP error RP Stmt %prec LOWER_THAN_ELSE
+                            | WHILE error RP Stmt        {   yyerrok; }
+                            | IF error RP Stmt %prec LOWER_THAN_ELSE
                                                             {   yyerrok; }
-                            | IF LP error RP Stmt ELSE Stmt {   yyerrok; }
+                            | IF error RP Stmt ELSE Stmt {   yyerrok; }
 ;
 DefList :                   Def DefList                     {
                                                                 Node **args[8] = {&$$, &$1, &$2};
