@@ -22,7 +22,7 @@ step4:
 step4_d:
 	./scanner test 2> ./debug_log
 
-pack:
+pack: all
 	rm -f ./Code/*.c ./Code/*.h ./Code/*.l ./Code/*.y ./Code/*.o
 	cp syntax.tab.c syntax.tab.h syntax.y yystype.h main.c lexical.l lex.yy.c ./Code
 	zip -r compiler.zip ./Code README.md report.pdf
