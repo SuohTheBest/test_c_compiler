@@ -1,68 +1,50 @@
-// 全局变量
+// sample
 int global_var = 10;
 
-// 结构体定义
+// sample
 struct Point {
     int x;
     int y;
 };
 
-// 函数声明
-void print_point(struct Point p);
+// sample
+int print_point(struct Point p);
 int sum(int a, int b);
 int factorial(int n);
 
 int main() {
-    // 局部变量
+    // sample
     int local_var = 5;
     int result;
 
-    // 条件语句
-    if (global_var > local_var) {
-        printf("Global variable is larger than local variable.\n");
-    } else {
-        printf("Local variable is larger or equal to global variable.\n");
-    }
-
-    // 结构体变量
+    // sample
     struct Point p1;
     p1.x = 3;
     p1.y = 4;
     print_point(p1);
 
-    // 函数调用
+    // sample
     result = sum(10, 20);
-    printf("Sum of 10 and 20 is: %d\n", result);
 
-    // 阶乘计算
+    // sample
     int num = 5;
     result = factorial(num);
-    printf("Factorial of %d is: %d\n", num, result);
 
-    // 数组和循环
+    // sample
     int arr[5] = {1, 2, 3, 4, 5};
-    for (int i = 0; i < 5; i++) {
-        printf("arr[%d] = %d\n", i, arr[i]);
-    }
 
-    // 指针操作
+    // sample
     int* ptr = &local_var;
-    printf("Value of local_var through pointer: %d\n", *ptr);
 
     return 0;
 }
 
-// 函数定义：输出结构体的值
-void print_point(struct Point p) {
-    printf("Point coordinates: (%d, %d)\n", p.x, p.y);
-}
-
-// 函数定义：求和
+// sample
 int sum(int a, int b) {
     return a + b;
 }
 
-// 递归函数：计算阶乘
+// sample
 int factorial(int n) {
     if (n == 0) {
         return 1;
