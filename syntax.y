@@ -47,8 +47,8 @@ ExtDef :                    Specifier ExtDecList SEMI       {
                                                                 Node **args[8] = {&$$, &$1, &$2, &$3};
                                                                 BUILDTREE(ExtDef, 3);
                                                             }
-                            | Specifier error SEMI          {   yyerrok; }
-                            | error CompSt                  {   yyerrok; }
+                            | Specifier error SEMI          {}
+                            | error CompSt                  {}
 ;
 ExtDecList :                VarDec                          {
                                                                 Node **args[8] = {&$$, &$1};
@@ -96,7 +96,7 @@ VarDec :                    ID                              {
                                                                 Node **args[8] = {&$$, &$1, &$2, &$3, &$4};
                                                                 BUILDTREE(VarDec, 4);
                                                             }
-                            | error RB                      { yyerrok; }
+                            | error RB                      {}
 ;
 FunDec :                    ID LP VarList RP                {
                                                                 Node **args[8] = {&$$, &$1, &$2, &$3, &$4};
