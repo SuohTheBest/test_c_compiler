@@ -3,15 +3,11 @@
 #include "yystype.h"
 
 void yyerror(char *msg);
+void add_error(int lineno);
 int error_flag = 0;
 Node *tree_root=NULL;
 int error_lineno[1024], cnt_errorb = 0;
 int has_a_error = 0;
-
-void add_error(int lineno) {
-    if (cnt_errorb == 0 || error_lineno[cnt_errorb - 1] != lineno)
-        error_lineno[cnt_errorb++] = lineno;
-}
 %}
 
 /* declared tokens */
@@ -51,6 +47,7 @@ ExtDef :                    Specifier ExtDecList SEMI       {
                                                                 Node **args[8] = {&$$, &$1, &$2, &$3};
                                                                 BUILDTREE(ExtDef, 3);
                                                             }
+                            | Specifier error SEMI          { yyerrok; }
 ;
 ExtDecList :                VarDec                          {
                                                                 Node **args[8] = {&$$, &$1};
@@ -263,9 +260,6 @@ Exp :                       Exp ASSIGNOP Exp                {
                                                                 Node **args[8] = {&$$, &$1};
                                                                 BUILDTREE(Exp, 1);
                                                             }
-                            | error RP                      { yyerrok; }
-                            | error RB                      { yyerrok; }
-                            | error ASSIGNOP                { yyerrok; }
 ;
 Args :                      Exp COMMA Args                  {
                                                                 Node **args[8] = {&$$, &$1, &$2, &$3};
@@ -279,4 +273,8 @@ Args :                      Exp COMMA Args                  {
 %%
 void yyerror(char *msg) {
     add_error(yylineno);
+}
+void add_error(int lineno) {
+    if (cnt_errorb == 0 || error_lineno[cnt_errorb - 1] != lineno)
+        error_lineno[cnt_errorb++] = lineno;
 }
