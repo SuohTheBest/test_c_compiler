@@ -30,11 +30,6 @@ int main() {
     int num = 5;
     result = factorial(num);
 
-    // sample
-    int arr[5] = {1, 2, 3, 4, 5};
-
-    // sample
-    int* ptr = &local_var;
 
     return 0;
 }
