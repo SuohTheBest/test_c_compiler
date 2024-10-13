@@ -25,7 +25,7 @@ step4_d:
 pack: all
 	rm -f ./Code/*.c ./Code/*.h ./Code/*.l ./Code/*.y ./Code/*.o
 	cp syntax.tab.c syntax.tab.h syntax.y yystype.h main.c lexical.l lex.yy.c ./Code
-	zip -r compiler.zip ./Code README.md report.pdf
+	zip -r compiler.zip ./Code report.pdf
 
 clean:
 	rm -rf lex.yy.c syntax.tab.h syntax.tab.c syntax.output debug_log scanner
