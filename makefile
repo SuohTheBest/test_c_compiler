@@ -23,9 +23,11 @@ step4_d:
 	./scanner test 2> ./debug_log
 
 pack: all
-	rm -f ./Code/*.c ./Code/*.h ./Code/*.l ./Code/*.y ./Code/*.o
+	rm -rf ./Code
+	mkdir Code
 	cp syntax.tab.c syntax.tab.h syntax.y yystype.h main.c lexical.l lex.yy.c ./Code
-	zip -r compiler.zip ./Code report.pdf
+	zip -r compiler.zip ./Code ./Reports/report.pdf
+	rm -rf ./Code
 
 clean:
 	rm -rf lex.yy.c syntax.tab.h syntax.tab.c syntax.output debug_log scanner
