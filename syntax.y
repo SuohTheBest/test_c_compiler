@@ -47,6 +47,10 @@ ExtDef :                    Specifier ExtDecList SEMI       {
                                                                 Node **args[8] = {&$$, &$1, &$2, &$3};
                                                                 BUILDTREE(ExtDef, 3);
                                                             }
+                            | Specifier FunDec SEMI         {
+                                                                Node **args[8] = {&$$, &$1, &$2, &$3};
+                                                                BUILDTREE(ExtDef, 3);
+                                                            }
                             | Specifier error SEMI          {}
                             | error CompSt                  {}
 ;

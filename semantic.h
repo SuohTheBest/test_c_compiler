@@ -1,0 +1,1 @@
+unsigned hash_pjw(char *name);

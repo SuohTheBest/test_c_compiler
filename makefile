@@ -4,12 +4,12 @@ debug: clean parsing_d
 parsing:
 	bison -d -v syntax.y
 	lex lexical.l
-	gcc syntax.tab.c main.c -lfl -o scanner
+	gcc syntax.tab.c main.c syntax.c -lfl -o scanner
 	./scanner ./TestCases/Smoke.cmm
 parsing_d:
 	bison -d -v -t syntax.y
 	lex lexical.l
-	gcc syntax.tab.c main.c -lfl -DDEBUG -o scanner
+	gcc syntax.tab.c main.c syntax.c -lfl -DDEBUG -o scanner
 	./scanner ./TestCases/Smoke.cmm 2> ./debug_log
 
 pack: all
