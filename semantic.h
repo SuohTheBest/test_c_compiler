@@ -6,7 +6,7 @@ typedef struct FieldList_ *FieldList;
 
 struct Type_ {
     enum {
-        BASIC, ARRAY, STRUCTURE
+        BASIC, ARRAY, STRUCTURE, FUNCTION
     } kind;
     union {
         enum {
@@ -17,6 +17,7 @@ struct Type_ {
             int size;
         } array;
         FieldList structure;
+        FieldList function;
     } u;
 };
 
@@ -26,12 +27,14 @@ struct FieldList_ {
     FieldList tail;
 };
 
-struct type_node{
+typedef struct type_node {
     char name[32];
     struct Type_ type;
-};
+    bool is_func_def;
+} type_node;
 
 
 unsigned hash_pjw(char *name);
+
 
 #endif //COMPILER_SEMANTIC_H
