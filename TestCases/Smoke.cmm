@@ -1,6 +1,13 @@
-int MatrixMax(int a[3][4]);
+struct Avg {
+  int r1 = 0;
+  struct {
+    int v2;
+    int weight;
+  } items[10];
+};
 
-int main()
-{
+int func(int a){
     return 0;
 }
+
+int o1;

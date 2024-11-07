@@ -1,12 +1,8 @@
 #include "syntax.h"
+
 #ifdef DEBUG
 #define YYDEBUG 1
 #endif
-
-extern void yyrestart(FILE *inputfile);
-extern Node *tree_root;
-extern int error_flag, has_a_error, cnt_errorb, yydebug;
-extern int error_lineno[1024];
 
 char type_map[49][16] = {"FLOAT", "INT", "TYPE", "STRUCT", "RETURN", "IF", "ELSE", "WHILE", "SEMI",
                          "COMMA", "LC", "RC", "ID", "ASSIGNOP", "AND", "OR", "RELOP", "PLUS",
