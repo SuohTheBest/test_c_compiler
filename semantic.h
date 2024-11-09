@@ -17,8 +17,7 @@ struct Type_ {
             Type elem;
             int size;
         } array;
-        FieldList structure;
-        FieldList function;
+        FieldList field;
     } data;
 };
 
@@ -31,16 +30,20 @@ struct FieldList_ {
 typedef struct sem_node {
     char *name;
     Type type;
-    int is_func_def;
+    int is_func_dec;
 } sem_node;
 
 unsigned hash_pjw(char *name);
 
-int add_type(char *name, Type type, int is_func_def);
+int typeEqual(Type t1, Type t2);
 
-int add_name(char *name, Type type, int is_func_def);
+void printType(Type t);
 
-void sem_read_tree(Node* root);
+int add_type(char *name, Type type, int is_func_dec);
+
+int add_name(char *name, Type type, int is_func_dec);
+
+void sem_read_tree(Node *root);
 
 sem_node *read_type(char *name);
 
@@ -48,18 +51,26 @@ sem_node *read_name(char *name);
 
 Node *find_node(Node *node, enum type_t type);
 
+void read_VarList(Node *node, Type t);
+
+void read_ParamDec(Node *node, Type t);
+
+void read_CompSt(Node *node);
+
 Type read_Specifier(Node *node);
 
-void read_ExtDecList(Node *node, Type type);
+Type read_FunDec(Node *node);
+
+void read_ExtDecList(Node *node, Type t);
 
 void read_ExtDef(Node *node);
 
-void read_DecList(Node *node, Type type, FieldList struct_field);
+void read_DecList(Node *node, Type curr_t, Type t);
 
-void read_DefList(Node *node, FieldList field);
+void read_DefList(Node *node, Type t);
 
-void read_Def(Node *node, FieldList field);
+void read_Def(Node *node, Type t);
 
-void read_VarDec(Node *node, Type type, FieldList struct_field);
+void read_VarDec(Node *node, Type curr_t, Type t);
 
 #endif //COMPILER_SEMANTIC_H

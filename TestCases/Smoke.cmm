@@ -1,13 +1,15 @@
 struct Avg {
-  int r1 = 0;
+  int r1;
   struct {
     int v2;
     int weight;
   } items[10];
 };
 
-int func(int a){
-    return 0;
-}
+int calculate_avg(struct Avg avg);
 
-int o1;
+int calculate_avg(struct Avg avg) {
+  int s = calculate_sum(avg);
+  avg.r1 = s / 10;
+  return avg.r1;
+}
