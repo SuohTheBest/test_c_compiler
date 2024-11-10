@@ -163,9 +163,17 @@ void printType(Type t) {
 }
 
 void sem_read_tree(Node *root) {
+    // 从tree_root调用时是不可能 = _DefList/_Exp 的
+    // 但我不想为read_CompSt再写一个这样的遍历函数，所以偷个懒
     if (root == NULL)return;
     if (root->type == _ExtDef) {
         read_ExtDef(root);
+        sem_read_tree(root->brother);
+    } else if (root->type == _DefList) {
+        read_DefList(root, NULL);
+        sem_read_tree(root->brother);
+    } else if (root->type == _Exp) {
+        read_Exp(root);
         sem_read_tree(root->brother);
     } else {
         sem_read_tree(root->child);
@@ -176,6 +184,26 @@ void sem_read_tree(Node *root) {
 Node *find_node(Node *node, enum type_t type) {
     while (node != NULL && node->type != type) node = node->brother;
     return node; // either NULL or correct.
+}
+
+Node *find_node_subtree(Node *node, enum type_t type) {
+    if (node == NULL || node->type == type) return node;
+    Node *result = find_node_subtree(node->child, type);
+    if (result != NULL) return result;
+    return find_node_subtree(node->brother, type);
+}
+
+Type check_func_call(Node *node, FieldList f) {
+    if (f == NULL)return NULL;
+    if (node == NULL) {
+        if (f->tail == NULL)return f->type;
+        else return NULL;
+    }
+    node = node->child;
+    Type curr = read_Exp(node).type;
+    if (!typeEqual(curr, f->type))return 0;
+    Node *next = find_node(node, _Args);
+    return check_func_call(next, f->tail);
 }
 
 Type read_Specifier(Node *node) {
@@ -219,8 +247,124 @@ Type read_Specifier(Node *node) {
     return NULL;
 }
 
-void read_CompSt(Node *node) {
-    // TODO
+void read_CompSt(Node *node, Type t) {
+    // 函数里的所有语句 (DefList + StmtList)
+    node = node->child;
+    // 先检查return type是否一致，避免传参
+    FieldList return_t = t->data.field;
+    while (return_t->tail != NULL)return_t = return_t->tail;
+    Node *pNode = find_node_subtree(node, _RETURN);
+    if (pNode) {
+        pNode = find_node(pNode, _Exp);
+        Type actual_t = read_Exp(pNode).type;
+        if (!typeEqual(actual_t, return_t->type))
+            sem_error(8, pNode->lineno);
+    }
+    sem_read_tree(node);
+}
+
+Exp_Type read_Exp(Node *node) {
+    node = node->child;
+    Exp_Type ans;
+    ans.type = NULL;
+    ans.l_val = 0;
+    ans.error = 1;
+    if (node->type == _ID && node->brother == NULL) {
+        sem_node *n = read_name(node->val.id);
+        if (!n) {
+            sem_error(1, node->lineno);
+            return ans;
+        }
+        ans.type = n->type;
+        ans.l_val = 1;
+    } else if (node->type == _INT)
+        ans.type = &int_type;
+    else if (node->type == _FLOAT)
+        ans.type = &float_type;
+    else if (node->type == _ID) {
+        // 函数调用
+        sem_node *n = read_name(node->val.id);
+        if (!n) {
+            sem_error(2, node->lineno);
+            return ans;
+        }
+        if (n->type->kind != FUNCTION) {
+            sem_error(11, node->lineno);
+            return ans;
+        }
+        Node *pNode = find_node(node, _Args);
+        ans.type = check_func_call(pNode, n->type->data.field);
+        if (ans.type == NULL) {
+            sem_error(9, node->lineno);
+            return ans;
+        }
+    } else if (node->type == _Exp && node->brother->type == _LB) {
+        // 访问数组
+        Exp_Type t1 = read_Exp(node);
+        if (t1.error) return ans;
+        if (t1.type->kind != ARRAY) {
+            sem_error(10, node->lineno);
+            return ans;
+        }
+        Node *pNode = find_node(node, _Exp);
+        Exp_Type t2 = read_Exp(pNode);
+        if (t2.error)return ans;
+        if (t2.type != &int_type) {
+            sem_error(12, node->lineno);
+            return ans;
+        }
+        ans.type = t1.type->data.array.elem;
+        ans.l_val = 1;
+    } else if (node->type == _Exp && node->brother->type == _DOT) {
+        // 访问struct
+        Exp_Type t1 = read_Exp(node);
+        if (t1.error)return ans;
+        if (t1.type->kind != STRUCTURE) {
+            sem_error(13, node->lineno);
+            return ans;
+        }
+        Node *pNode = find_node(node, _ID);
+        char *field_name = pNode->val.id;
+        FieldList f = t1.type->data.field;
+        while (f != NULL && strcmp(f->name, field_name) != 0) f = f->tail;
+        if (f == NULL) {
+            sem_error(14, node->lineno);
+            return ans;
+        }
+        ans.type = f->type;
+        ans.l_val = 1;
+    } else if (node->type == _LP) {
+        Node *pNode = find_node(node, _Exp);
+        return read_Exp(pNode);
+    } else if (node->type != _Exp) {
+        Node *pNode = find_node(node, _Exp);
+        ans = read_Exp(pNode);
+        ans.l_val = 0;
+    } else if (node->brother->type != _ASSIGNOP) {
+        Exp_Type t1 = read_Exp(node);
+        if (t1.error)return ans;
+        Node *pNode = find_node(node->brother, _Exp);
+        Exp_Type t2 = read_Exp(pNode);
+        if (t2.error)return ans;
+        if (!typeEqual(t1.type, t2.type)) {
+            sem_error(7, node->lineno);
+            return ans;
+        }
+        ans.type = t1.type;
+    } else {
+        // 赋值号
+        Exp_Type t1 = read_Exp(node);
+        if (t1.error)return ans;
+        Node *pNode = find_node(node->brother, _Exp);
+        Exp_Type t2 = read_Exp(pNode);
+        if (t2.error)return ans;
+        if (!t1.l_val)
+            sem_error(6, node->lineno);
+        if (!typeEqual(t1.type, t2.type))
+            sem_error(5, node->lineno);
+    }
+    ans.error = 0;
+    return ans;
 }
 
 void read_ExtDecList(Node *node, Type t) {
@@ -274,7 +418,7 @@ void read_ExtDef(Node *node) {
         return;
     }
     add_name(func_name, func_type, 0);
-    read_CompSt(pNode);
+    read_CompSt(pNode, func_type);
 }
 
 void read_VarList(Node *node, Type t) {
@@ -323,13 +467,13 @@ void read_DecList(Node *node, Type curr_t, Type t) {
     // Dec COMMA DecList
     // e.g. a = 0,b,c,d
     // curr_t 是这些变量的type, t是function/struct, 如果存在, 需要add_tail这些变量
+    Node *vardec = node->child;
     if (t) {
         // error type 15
         // 不允许在struct/function里赋值
-        Node *vardec = node->child;
         if (vardec->brother != NULL)sem_error(15, vardec->lineno);
-        read_VarDec(vardec, curr_t, t);
     }
+    read_VarDec(vardec, curr_t, t);
     Node *next = find_node(node, _DecList);
     if (next) {
         read_DecList(next, curr_t, t);

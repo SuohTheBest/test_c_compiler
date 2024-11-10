@@ -21,6 +21,12 @@ struct Type_ {
     } data;
 };
 
+typedef struct Exp_Type {
+    Type type;
+    int l_val;
+    int error;
+} Exp_Type;
+
 struct FieldList_ {
     char *name;
     Type type;
@@ -49,13 +55,15 @@ sem_node *read_type(char *name);
 
 sem_node *read_name(char *name);
 
+Type check_func_call(Node *node, FieldList f);
+
 Node *find_node(Node *node, enum type_t type);
 
 void read_VarList(Node *node, Type t);
 
 void read_ParamDec(Node *node, Type t);
 
-void read_CompSt(Node *node);
+void read_CompSt(Node *node, Type t);
 
 Type read_Specifier(Node *node);
 
@@ -64,6 +72,8 @@ Type read_FunDec(Node *node);
 void read_ExtDecList(Node *node, Type t);
 
 void read_ExtDef(Node *node);
+
+Exp_Type read_Exp(Node *node);
 
 void read_DecList(Node *node, Type curr_t, Type t);
 
