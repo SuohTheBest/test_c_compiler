@@ -3,7 +3,6 @@
 #define offset 17
 char anonymous[] = "0_anonymous_";
 int anonymous_cnt = 0;
-int is_func_param = 0;
 char sem_error_text[20][64] = {"Unknown Error",
                                "Undefined variable",
                                "Undefined function",
@@ -45,8 +44,8 @@ sem_node sem_type_map[1024];
 sem_node sem_name_map[1024];
 
 int add_type(char *name, Type type, int is_func_dec) {
-    printf("add_type:%s\n", name);
-    printType(type);
+//    printf("add_type:%s\n", name);
+//    printType(type);
     unsigned index = hash_pjw(name);
     while (sem_type_map[index].name != NULL && strcmp(sem_type_map[index].name, name) != 0)index += offset;
     if (sem_type_map[index].name == NULL) {
@@ -60,8 +59,8 @@ int add_type(char *name, Type type, int is_func_dec) {
 }
 
 int add_name(char *name, Type type, int is_func_dec) {
-    printf("add_name:%s\n", name);
-    printType(type);
+//    printf("add_name:%s\n", name);
+//    printType(type);
     unsigned index = hash_pjw(name);
     while (sem_name_map[index].name != NULL && strcmp(sem_name_map[index].name, name) != 0)index += offset;
     if (sem_name_map[index].name == NULL) {
@@ -250,7 +249,8 @@ Type read_Specifier(Node *node) {
 void read_CompSt(Node *node, Type t) {
     // 函数里的所有语句 (DefList + StmtList)
     node = node->child;
-    // 先检查return type是否一致，避免传参
+    sem_read_tree(node);
+    // 额外检查return type是否一致，避免传参
     FieldList return_t = t->data.field;
     while (return_t->tail != NULL)return_t = return_t->tail;
     Node *pNode = find_node_subtree(node, _RETURN);
@@ -260,7 +260,6 @@ void read_CompSt(Node *node, Type t) {
         if (!typeEqual(actual_t, return_t->type))
             sem_error(8, pNode->lineno);
     }
-    sem_read_tree(node);
 }
 
 Exp_Type read_Exp(Node *node) {
@@ -306,7 +305,7 @@ Exp_Type read_Exp(Node *node) {
             sem_error(10, node->lineno);
             return ans;
         }
-        Node *pNode = find_node(node, _Exp);
+        Node *pNode = find_node(node->brother, _Exp);
         Exp_Type t2 = read_Exp(pNode);
         if (t2.error)return ans;
         if (t2.type != &int_type) {
@@ -350,7 +349,9 @@ Exp_Type read_Exp(Node *node) {
             sem_error(7, node->lineno);
             return ans;
         }
-        ans.type = t1.type;
+        pNode = node->brother;
+        if (pNode->type == _AND || pNode->type == _OR || pNode->type == _RELOP)ans.type = &int_type;
+        else ans.type = t1.type;
     } else {
         // 赋值号
         Exp_Type t1 = read_Exp(node);
@@ -452,9 +453,7 @@ Type read_FunDec(Node *node) {
     func_type->kind = FUNCTION;
     pNode = find_node(node, _VarList);
     if (pNode) {
-        is_func_param = 1;
         read_VarList(pNode, func_type);
-        is_func_param = 0;
     }
     // 返回值type塞到field最后
     FieldList p_field = add_tail(func_type);
@@ -485,8 +484,10 @@ void read_VarDec(Node *node, Type curr_t, Type t) {
     // e.g. a[10][10]
     if (node->type == _ID) {
         // 变量重复定义
-        if (!is_func_param && add_name(node->val.id, curr_t, 0) != 0)
-            sem_error(3, node->lineno);
+        if (add_name(node->val.id, curr_t, 0) != 0) {
+            if (t && t->kind == STRUCTURE)sem_error(15, node->lineno);
+            else sem_error(3, node->lineno);
+        }
         if (t) {
             FieldList field = add_tail(t);
             field->type = curr_t;

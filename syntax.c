@@ -57,5 +57,5 @@ void syntax_analysis(int argc, char **argv) {
     yyrestart(f);
     yyparse();
     print_error();
-    if (error_flag == 0) print_tree(tree_root, 0);
+//    if (error_flag == 0) print_tree(tree_root, 0);
 }
