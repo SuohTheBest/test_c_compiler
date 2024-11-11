@@ -3,6 +3,7 @@
 #define offset 17
 char anonymous[] = "0_anonymous_";
 int anonymous_cnt = 0;
+int write_enable = 1;
 char sem_error_text[20][64] = {"Unknown Error",
                                "Undefined variable",
                                "Undefined function",
@@ -43,7 +44,7 @@ void sem_error(int kind, int lineno) {
 sem_node sem_type_map[1024];
 sem_node sem_name_map[1024];
 
-int add_type(char *name, Type type, int is_func_dec) {
+int add_type(char *name, Type type) {
 //    printf("add_type:%s\n", name);
 //    printType(type);
     unsigned index = hash_pjw(name);
@@ -51,7 +52,6 @@ int add_type(char *name, Type type, int is_func_dec) {
     if (sem_type_map[index].name == NULL) {
         sem_type_map[index].name = name;
         sem_type_map[index].type = type;
-        sem_type_map[index].is_func_dec = is_func_dec;
         return 0;
     } else {
         return -1;
@@ -111,11 +111,21 @@ int typeEqual(Type t1, Type t2) {
         case ARRAY:
             return t1->data.array.size == t2->data.array.size &&
                    typeEqual(t1->data.array.elem, t2->data.array.elem);
-        case STRUCTURE:
-        case FUNCTION: {
+        case STRUCTURE:{
             FieldList f1 = t1->data.field, f2 = t2->data.field;
             while (f1 && f2) {
                 if (strcmp(f1->name, f2->name) != 0 || !typeEqual(f1->type, f2->type)) {
+                    return 0;
+                }
+                f1 = f1->tail;
+                f2 = f2->tail;
+            }
+            return f1 == NULL && f2 == NULL;
+        }
+        case FUNCTION: {
+            FieldList f1 = t1->data.field, f2 = t2->data.field;
+            while (f1 && f2) {
+                if (!typeEqual(f1->type, f2->type)) {
                     return 0;
                 }
                 f1 = f1->tail;
@@ -180,6 +190,16 @@ void sem_read_tree(Node *root) {
     }
 }
 
+void semantic_analysis(Node *root) {
+    sem_read_tree(root);
+    // 检查声明未定义
+    for (int i = 0; i < 1024; ++i) {
+        if (sem_name_map[i].type && sem_name_map[i].type->kind == FUNCTION && sem_name_map[i].is_func_dec) {
+            sem_error(18, sem_name_map[i].is_func_dec);
+        }
+    }
+}
+
 Node *find_node(Node *node, enum type_t type) {
     while (node != NULL && node->type != type) node = node->brother;
     return node; // either NULL or correct.
@@ -231,7 +251,7 @@ Type read_Specifier(Node *node) {
         Type struct_type = calloc(1, sizeof(struct Type_));
         struct_type->kind = STRUCTURE;
         read_DefList(def_list, struct_type);
-        if (add_type(tag_name, struct_type, 0) != 0)
+        if (add_type(tag_name, struct_type) != 0)
             sem_error(16, node->lineno);
         else
             return struct_type;
@@ -391,7 +411,14 @@ void read_ExtDef(Node *node) {
     if (!pNode)return;
     // Specifier FunDec SEMI
     // e.g. int func(struct var v);
-    Type func_type = read_FunDec(pNode);
+    Node *compSt = find_node(node, _CompSt);
+    Type func_type = NULL;
+    if (!compSt) {
+        write_enable = 0;
+        func_type = read_FunDec(pNode);
+        write_enable = 1;
+    } else
+        func_type = read_FunDec(pNode);
     FieldList p_field = func_type->data.field;
     while (p_field->tail != NULL)p_field = p_field->tail;
     p_field->type = type;
@@ -403,7 +430,7 @@ void read_ExtDef(Node *node) {
         free(func_type);
         return;
     } else if (!pNode && prev_func == NULL) {
-        add_name(func_name, func_type, 1);
+        add_name(func_name, func_type, node->lineno);
         return;
     }
     // Specifier FunDec CompSt
@@ -484,7 +511,7 @@ void read_VarDec(Node *node, Type curr_t, Type t) {
     // e.g. a[10][10]
     if (node->type == _ID) {
         // 变量重复定义
-        if (add_name(node->val.id, curr_t, 0) != 0) {
+        if (write_enable && add_name(node->val.id, curr_t, 0) != 0) {
             if (t && t->kind == STRUCTURE)sem_error(15, node->lineno);
             else sem_error(3, node->lineno);
         }

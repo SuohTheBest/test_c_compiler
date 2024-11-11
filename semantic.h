@@ -45,11 +45,13 @@ int typeEqual(Type t1, Type t2);
 
 void printType(Type t);
 
-int add_type(char *name, Type type, int is_func_dec);
+int add_type(char *name, Type type);
 
 int add_name(char *name, Type type, int is_func_dec);
 
 void sem_read_tree(Node *root);
+
+void semantic_analysis(Node *root);
 
 sem_node *read_type(char *name);
 
