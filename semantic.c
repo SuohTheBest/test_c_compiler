@@ -4,6 +4,7 @@
 char anonymous[] = "0_anonymous_";
 int anonymous_cnt = 0;
 int write_enable = 1;
+int last_err_kind = 0, last_err_lineno = 0;
 char sem_error_text[20][64] = {"Unknown Error",
                                "Undefined variable",
                                "Undefined function",
@@ -38,6 +39,9 @@ unsigned hash_pjw(char *name) {
 }
 
 void sem_error(int kind, int lineno) {
+    if (kind == last_err_kind && lineno == last_err_lineno)return;
+    last_err_kind = kind;
+    last_err_lineno = lineno;
     printf("Error type %d at Line %d: %s.\n", kind, lineno, sem_error_text[kind]);
 }
 
@@ -104,23 +108,18 @@ int typeEqual(Type t1, Type t2) {
     if (t1 == NULL && t2 == NULL) return 1;
     if (t1 == NULL || t2 == NULL) return 0;
     if (t1->kind != t2->kind) return 0;
-
     switch (t1->kind) {
         case BASIC:
             return t1->data.basic == t2->data.basic;
-        case ARRAY:
-            return t1->data.array.size == t2->data.array.size &&
-                   typeEqual(t1->data.array.elem, t2->data.array.elem);
-        case STRUCTURE:{
-            FieldList f1 = t1->data.field, f2 = t2->data.field;
-            while (f1 && f2) {
-                if (strcmp(f1->name, f2->name) != 0 || !typeEqual(f1->type, f2->type)) {
-                    return 0;
-                }
-                f1 = f1->tail;
-                f2 = f2->tail;
+        case ARRAY: {
+            while (t1->kind == ARRAY && t2->kind == ARRAY) {
+                t1 = t1->data.array.elem;
+                t2 = t2->data.array.elem;
             }
-            return f1 == NULL && f2 == NULL;
+            return typeEqual(t1, t2);
+        }
+        case STRUCTURE: {
+            return t1 == t2;
         }
         case FUNCTION: {
             FieldList f1 = t1->data.field, f2 = t2->data.field;
@@ -365,13 +364,20 @@ Exp_Type read_Exp(Node *node) {
         Node *pNode = find_node(node->brother, _Exp);
         Exp_Type t2 = read_Exp(pNode);
         if (t2.error)return ans;
-        if (!typeEqual(t1.type, t2.type)) {
-            sem_error(7, node->lineno);
-            return ans;
-        }
         pNode = node->brother;
-        if (pNode->type == _AND || pNode->type == _OR || pNode->type == _RELOP)ans.type = &int_type;
-        else ans.type = t1.type;
+        if (pNode->type == _AND || pNode->type == _OR || pNode->type == _RELOP) {
+            if (t1.type != &int_type || t2.type != &int_type) {
+                sem_error(7, node->lineno);
+                return ans;
+            }
+            ans.type = &int_type;
+        } else {
+            if ((t1.type != &int_type && t1.type != &float_type) || !typeEqual(t1.type, t2.type)) {
+                sem_error(7, node->lineno);
+                return ans;
+            }
+            ans.type = t1.type;
+        }
     } else {
         // 赋值号
         Exp_Type t1 = read_Exp(node);
@@ -500,6 +506,12 @@ void read_DecList(Node *node, Type curr_t, Type t) {
         if (vardec->brother != NULL)sem_error(15, vardec->lineno);
     }
     read_VarDec(vardec, curr_t, t);
+    Node *exp = find_node(vardec, _Exp);
+    if (!t && exp) {
+        Exp_Type expType = read_Exp(exp);
+        if (!expType.error && !typeEqual(curr_t, expType.type))
+            sem_error(5, exp->lineno);
+    }
     Node *next = find_node(node, _DecList);
     if (next) {
         read_DecList(next, curr_t, t);
