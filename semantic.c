@@ -105,7 +105,7 @@ sem_node *read_name(char *name) {
 }
 
 int typeEqual(Type t1, Type t2) {
-    if (t1 == NULL && t2 == NULL) return 1;
+    if (t1 == t2) return 1;
     if (t1 == NULL || t2 == NULL) return 0;
     if (t1->kind != t2->kind) return 0;
     switch (t1->kind) {
