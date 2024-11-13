@@ -1,9 +1,0 @@
-struct Point shift_point(struct Point c, int plus_x[7][8], int e) {
-  int d[1][2];
-  plus_x = d;
-  struct Point _p;
-  _p = p;
-  _p.x = p.x + plus_x;
-  _p.y = p.y + plus_y;
-  return _p;
-}
