@@ -36,7 +36,7 @@ struct FieldList_ {
 typedef struct sem_node {
     char *name;
     Type type;
-    int is_func_dec;
+    int func_dec_lineno;
 } sem_node;
 
 unsigned hash_pjw(char *name);
@@ -45,17 +45,13 @@ int typeEqual(Type t1, Type t2);
 
 void printType(Type t);
 
-int add_type(char *name, Type type);
+int add_sem_node(char *name, Type type, int is_func_dec);
 
-int add_name(char *name, Type type, int is_func_dec);
-
-void sem_read_tree(Node *root);
+void sem_read_tree(Node *root, FieldList f);
 
 void semantic_analysis(Node *root);
 
-sem_node *read_type(char *name);
-
-sem_node *read_name(char *name);
+sem_node *read_sem_node(char *name);
 
 Type check_func_call(Node *node, FieldList f);
 

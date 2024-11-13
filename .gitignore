@@ -2,6 +2,7 @@
 /cmake-build-debug
 /compiler.zip
 /.idea
+/.vscode
 /lex.yy.c
 /syntax.output
 /syntax.tab.h
