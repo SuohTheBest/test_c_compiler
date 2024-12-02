@@ -45,7 +45,7 @@ int typeEqual(Type t1, Type t2);
 
 void printType(Type t);
 
-int add_sem_node(char *name, Type type, int is_func_dec);
+int add_sem_node(char *name, Type type, int func_dec_lineno);
 
 void sem_read_tree(Node *root, FieldList f);
 

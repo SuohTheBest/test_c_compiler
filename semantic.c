@@ -47,7 +47,7 @@ void sem_error(int kind, int lineno) {
 
 sem_node sem_map[1024];
 
-int add_sem_node(char *name, Type type, int is_func_dec) {
+int add_sem_node(char *name, Type type, int func_dec_lineno) {
 //    printf("add_sem_node:%s\n", name);
 //    printType(type);
     unsigned index = hash_pjw(name);
@@ -55,7 +55,7 @@ int add_sem_node(char *name, Type type, int is_func_dec) {
     if (sem_map[index].name == NULL) {
         sem_map[index].name = name;
         sem_map[index].type = type;
-        sem_map[index].func_dec_lineno = is_func_dec;
+        sem_map[index].func_dec_lineno = func_dec_lineno;
         return 0;
     } else {
         return -1;
@@ -174,6 +174,21 @@ void sem_read_tree(Node *root, FieldList f) {
 }
 
 void semantic_analysis(Node *root) {
+    Type t_read, t_write;
+    t_read = calloc(1, sizeof(struct Type_));
+    t_write = calloc(1, sizeof(struct Type_));
+    t_read->kind = FUNCTION;
+    t_write->kind = FUNCTION;
+    FieldList f_read = add_tail(t_read);
+    f_read->name = "read";
+    f_read->type = &int_type;
+    FieldList f1_write = add_tail(t_write);
+    f1_write->type = &int_type;
+    FieldList f2_write = add_tail(t_write);
+    f2_write->name = "write";
+    f2_write->type = &int_type;
+    add_sem_node("read", t_read, 0);
+    add_sem_node("write", t_write, 0);
     sem_read_tree(root, NULL);
     // 检查声明未定义
     for (int i = 0; i < 1024; ++i) {
