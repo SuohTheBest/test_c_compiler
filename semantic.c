@@ -62,7 +62,7 @@ int add_sem_node(char *name, Type type, int func_dec_lineno) {
     }
 }
 
-FieldList add_tail(Type t) {
+FieldList create_tail_field(Type t) {
     FieldList p = t->data.field;
     if (!p) {
         t->data.field = calloc(1, sizeof(struct FieldList_));
@@ -179,12 +179,12 @@ void semantic_analysis(Node *root) {
     t_write = calloc(1, sizeof(struct Type_));
     t_read->kind = FUNCTION;
     t_write->kind = FUNCTION;
-    FieldList f_read = add_tail(t_read);
+    FieldList f_read = create_tail_field(t_read);
     f_read->name = "read";
     f_read->type = &int_type;
-    FieldList f1_write = add_tail(t_write);
+    FieldList f1_write = create_tail_field(t_write);
     f1_write->type = &int_type;
-    FieldList f2_write = add_tail(t_write);
+    FieldList f2_write = create_tail_field(t_write);
     f2_write->name = "write";
     f2_write->type = &int_type;
     add_sem_node("read", t_read, 0);
@@ -485,7 +485,7 @@ Type read_FunDec(Node *node) {
         read_VarList(pNode, func_type);
     }
     // 返回值type塞到field最后
-    FieldList p_field = add_tail(func_type);
+    FieldList p_field = create_tail_field(func_type);
     p_field->name = func_name;
     return func_type;
 }
@@ -524,7 +524,7 @@ void read_VarDec(Node *node, Type curr_t, Type t) {
             else sem_error(3, node->lineno);
         }
         if (t) {
-            FieldList field = add_tail(t);
+            FieldList field = create_tail_field(t);
             field->type = curr_t;
             field->name = node->val.id;
         }
