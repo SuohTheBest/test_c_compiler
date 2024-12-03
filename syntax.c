@@ -50,12 +50,14 @@ void print_error() {
     }
 }
 
-void syntax_analysis(int argc, char **argv) {
-    assert(argc > 1);
+int syntax_analysis(char *fileName) {
     memset(error_lineno, 0, sizeof(error_lineno));
-    FILE *f = fopen(argv[1], "r");
+    FILE *f = fopen(fileName, "w+");
+    if (f == NULL) assert(0);
     yyrestart(f);
     yyparse();
+    fclose(f);
     print_error();
     // if (error_flag == 0) print_tree(tree_root, 0);
+    return error_flag;
 }

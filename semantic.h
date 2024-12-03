@@ -1,15 +1,18 @@
 #ifndef COMPILER_SEMANTIC_H
 #define COMPILER_SEMANTIC_H
 
-#include "yystype.h"
 #include "string.h"
+#include "yystype.h"
 
 typedef struct Type_ *Type;
 typedef struct FieldList_ *FieldList;
 
 struct Type_ {
     enum {
-        BASIC, ARRAY, STRUCTURE, FUNCTION
+        BASIC,
+        ARRAY,
+        STRUCTURE,
+        FUNCTION
     } kind;
     union {
         int basic;
@@ -49,7 +52,7 @@ int add_sem_node(char *name, Type type, int func_dec_lineno);
 
 void sem_read_tree(Node *root, FieldList f);
 
-void semantic_analysis(Node *root);
+int semantic_analysis(Node *root);
 
 sem_node *read_sem_node(char *name);
 
@@ -81,4 +84,4 @@ void read_Def(Node *node, Type t);
 
 void read_VarDec(Node *node, Type curr_t, Type t);
 
-#endif //COMPILER_SEMANTIC_H
+#endif // COMPILER_SEMANTIC_H

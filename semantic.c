@@ -26,8 +26,8 @@ char sem_error_text[20][64] = {"Unknown Error",
                                "Function declaration without definition",
                                "Multiple or conflict declaration of function"};
 
-struct Type_ int_type = {.kind=BASIC, .data=1};
-struct Type_ float_type = {.kind=BASIC, .data=0};
+struct Type_ int_type = {.kind = BASIC, .data = 1};
+struct Type_ float_type = {.kind = BASIC, .data = 0};
 
 unsigned hash_pjw(char *name) {
     unsigned val = 0, i;
@@ -39,7 +39,7 @@ unsigned hash_pjw(char *name) {
 }
 
 void sem_error(int kind, int lineno) {
-    if (kind == last_err_kind && lineno == last_err_lineno)return;
+    if (kind == last_err_kind && lineno == last_err_lineno) return;
     last_err_kind = kind;
     last_err_lineno = lineno;
     printf("Error type %d at Line %d: %s.\n", kind, lineno, sem_error_text[kind]);
@@ -48,10 +48,10 @@ void sem_error(int kind, int lineno) {
 sem_node sem_map[1024];
 
 int add_sem_node(char *name, Type type, int func_dec_lineno) {
-//    printf("add_sem_node:%s\n", name);
-//    printType(type);
+    //    printf("add_sem_node:%s\n", name);
+    //    printType(type);
     unsigned index = hash_pjw(name);
-    while (sem_map[index].name != NULL && strcmp(sem_map[index].name, name) != 0)index += offset;
+    while (sem_map[index].name != NULL && strcmp(sem_map[index].name, name) != 0) index += offset;
     if (sem_map[index].name == NULL) {
         sem_map[index].name = name;
         sem_map[index].type = type;
@@ -69,7 +69,7 @@ FieldList create_tail_field(Type t) {
         p = t->data.field;
         return p;
     } else {
-        while (p->tail != NULL)p = p->tail;
+        while (p->tail != NULL) p = p->tail;
         p->tail = calloc(1, sizeof(struct FieldList_));
         return p->tail;
     }
@@ -77,9 +77,11 @@ FieldList create_tail_field(Type t) {
 
 sem_node *read_sem_node(char *name) {
     unsigned index = hash_pjw(name);
-    while (sem_map[index].name != NULL && strcmp(sem_map[index].name, name) != 0)index += offset;
-    if (sem_map[index].name == NULL) return NULL;
-    else return &sem_map[index];
+    while (sem_map[index].name != NULL && strcmp(sem_map[index].name, name) != 0) index += offset;
+    if (sem_map[index].name == NULL)
+        return NULL;
+    else
+        return &sem_map[index];
 }
 
 int typeEqual(Type t1, Type t2) {
@@ -87,31 +89,31 @@ int typeEqual(Type t1, Type t2) {
     if (t1 == NULL || t2 == NULL) return 0;
     if (t1->kind != t2->kind) return 0;
     switch (t1->kind) {
-        case BASIC:
-            return t1->data.basic == t2->data.basic;
-        case ARRAY: {
-            while (t1->kind == ARRAY && t2->kind == ARRAY) {
-                t1 = t1->data.array.elem;
-                t2 = t2->data.array.elem;
+    case BASIC:
+        return t1->data.basic == t2->data.basic;
+    case ARRAY: {
+        while (t1->kind == ARRAY && t2->kind == ARRAY) {
+            t1 = t1->data.array.elem;
+            t2 = t2->data.array.elem;
+        }
+        return typeEqual(t1, t2);
+    }
+    case STRUCTURE: {
+        return t1 == t2;
+    }
+    case FUNCTION: {
+        FieldList f1 = t1->data.field, f2 = t2->data.field;
+        while (f1 && f2) {
+            if (!typeEqual(f1->type, f2->type)) {
+                return 0;
             }
-            return typeEqual(t1, t2);
+            f1 = f1->tail;
+            f2 = f2->tail;
         }
-        case STRUCTURE: {
-            return t1 == t2;
-        }
-        case FUNCTION: {
-            FieldList f1 = t1->data.field, f2 = t2->data.field;
-            while (f1 && f2) {
-                if (!typeEqual(f1->type, f2->type)) {
-                    return 0;
-                }
-                f1 = f1->tail;
-                f2 = f2->tail;
-            }
-            return f1 == NULL && f2 == NULL;
-        }
-        default:
-            return 0;
+        return f1 == NULL && f2 == NULL;
+    }
+    default:
+        return 0;
     }
 }
 
@@ -121,37 +123,39 @@ void printType(Type t) {
         return;
     }
     switch (t->kind) {
-        case BASIC:
-            if (t->data.basic)printf("INT\n");
-            else printf("FLOAT\n");
-            break;
-        case ARRAY:
-            printf("ARRAY : size = %d, element type = ", t->data.array.size);
-            printType(t->data.array.elem);
-            break;
-        case STRUCTURE:
-            printf("STRUCTURE :\n");
-            for (FieldList f = t->data.field; f; f = f->tail) {
-                printf("  Field name: %s, Field type: ", f->name);
-                printType(f->type);
-            }
-            break;
-        case FUNCTION:
-            printf("FUNCTION Type:\n");
-            for (FieldList f = t->data.field; f; f = f->tail) {
-                printf("  Parameter name: %s, Parameter type: ", f->name);
-                printType(f->type);
-            }
-            break;
-        default:
-            printf("Unknown Type\n");
+    case BASIC:
+        if (t->data.basic)
+            printf("INT\n");
+        else
+            printf("FLOAT\n");
+        break;
+    case ARRAY:
+        printf("ARRAY : size = %d, element type = ", t->data.array.size);
+        printType(t->data.array.elem);
+        break;
+    case STRUCTURE:
+        printf("STRUCTURE :\n");
+        for (FieldList f = t->data.field; f; f = f->tail) {
+            printf("  Field name: %s, Field type: ", f->name);
+            printType(f->type);
+        }
+        break;
+    case FUNCTION:
+        printf("FUNCTION Type:\n");
+        for (FieldList f = t->data.field; f; f = f->tail) {
+            printf("  Parameter name: %s, Parameter type: ", f->name);
+            printType(f->type);
+        }
+        break;
+    default:
+        printf("Unknown Type\n");
     }
 }
 
 void sem_read_tree(Node *root, FieldList f) {
     // 从tree_root调用时是不可能 = _DefList/_Exp 的
     // 但我不想为read_CompSt再写一个这样的遍历函数，所以偷个懒
-    if (root == NULL)return;
+    if (root == NULL) return;
     if (root->type == _ExtDef) {
         read_ExtDef(root);
         sem_read_tree(root->brother, f);
@@ -173,7 +177,7 @@ void sem_read_tree(Node *root, FieldList f) {
     }
 }
 
-void semantic_analysis(Node *root) {
+int semantic_analysis(Node *root) {
     Type t_read, t_write;
     t_read = calloc(1, sizeof(struct Type_));
     t_write = calloc(1, sizeof(struct Type_));
@@ -196,6 +200,7 @@ void semantic_analysis(Node *root) {
             sem_error(18, sem_map[i].func_dec_lineno);
         }
     }
+    return last_err_lineno;
 }
 
 Node *find_node(Node *node, enum type_t type) {
@@ -211,14 +216,16 @@ Node *find_node_subtree(Node *node, enum type_t type) {
 }
 
 Type check_func_call(Node *node, FieldList f) {
-    if (f == NULL)return NULL;
+    if (f == NULL) return NULL;
     if (node == NULL) {
-        if (f->tail == NULL)return f->type;
-        else return NULL;
+        if (f->tail == NULL)
+            return f->type;
+        else
+            return NULL;
     }
     node = node->child;
     Type curr = read_Exp(node).type;
-    if (!typeEqual(curr, f->type))return 0;
+    if (!typeEqual(curr, f->type)) return 0;
     Node *next = find_node(node, _Args);
     return check_func_call(next, f->tail);
 }
@@ -227,15 +234,18 @@ Type read_Specifier(Node *node) {
     node = node->child;
     // basic types
     if (node->type == _TYPE) {
-        if (node->val.i_val == 0) return &int_type;
-        else return &float_type;
+        if (node->val.i_val == 0)
+            return &int_type;
+        else
+            return &float_type;
     }
     // struct types
     node = node->child;
     Node *tag = find_node(node, _Tag);
     char *tag_name;
-    if (tag == NULL)tag = find_node(node, _OptTag);
-    if (tag)tag_name = tag->child->val.id;
+    if (tag == NULL) tag = find_node(node, _OptTag);
+    if (tag)
+        tag_name = tag->child->val.id;
     else {
         tag_name = calloc(1, 64 * sizeof(char));
         memset(tag_name, 0, 64 * sizeof(char));
@@ -269,7 +279,7 @@ void read_CompSt(Node *node, Type t) {
     node = node->child;
     // 悲报：检查return type是否一致仍然需要传参
     FieldList return_t = t->data.field;
-    while (return_t->tail != NULL)return_t = return_t->tail;
+    while (return_t->tail != NULL) return_t = return_t->tail;
     // 可能存在多个return分支
     sem_read_tree(node, return_t);
 }
@@ -319,7 +329,7 @@ Exp_Type read_Exp(Node *node) {
         }
         Node *pNode = find_node(node->brother, _Exp);
         Exp_Type t2 = read_Exp(pNode);
-        if (t2.error)return ans;
+        if (t2.error) return ans;
         if (t2.type != &int_type) {
             sem_error(12, node->lineno);
             return ans;
@@ -329,7 +339,7 @@ Exp_Type read_Exp(Node *node) {
     } else if (node->type == _Exp && node->brother->type == _DOT) {
         // 访问struct
         Exp_Type t1 = read_Exp(node);
-        if (t1.error)return ans;
+        if (t1.error) return ans;
         if (t1.type->kind != STRUCTURE) {
             sem_error(13, node->lineno);
             return ans;
@@ -353,10 +363,10 @@ Exp_Type read_Exp(Node *node) {
         ans.l_val = 0;
     } else if (node->brother->type != _ASSIGNOP) {
         Exp_Type t1 = read_Exp(node);
-        if (t1.error)return ans;
+        if (t1.error) return ans;
         Node *pNode = find_node(node->brother, _Exp);
         Exp_Type t2 = read_Exp(pNode);
-        if (t2.error)return ans;
+        if (t2.error) return ans;
         pNode = node->brother;
         if ((t1.type != &int_type && t1.type != &float_type) || !typeEqual(t1.type, t2.type)) {
             sem_error(7, node->lineno);
@@ -369,10 +379,10 @@ Exp_Type read_Exp(Node *node) {
     } else {
         // 赋值号
         Exp_Type t1 = read_Exp(node);
-        if (t1.error)return ans;
+        if (t1.error) return ans;
         Node *pNode = find_node(node->brother, _Exp);
         Exp_Type t2 = read_Exp(pNode);
-        if (t2.error)return ans;
+        if (t2.error) return ans;
         if (!t1.l_val) {
             sem_error(6, node->lineno);
             return ans;
@@ -389,7 +399,7 @@ Exp_Type read_Exp(Node *node) {
 
 void read_ExtDecList(Node *node, Type t) {
     node = node->child;
-    if (node->type == _VarDec)read_VarDec(node, t, NULL);
+    if (node->type == _VarDec) read_VarDec(node, t, NULL);
     Node *next = find_node(node, _ExtDecList);
     if (next) read_ExtDecList(next, t);
 }
@@ -407,7 +417,7 @@ void read_ExtDef(Node *node) {
     // Specifier SEMI
     // e.g. struct s;
     pNode = find_node(node, _FunDec);
-    if (!pNode)return;
+    if (!pNode) return;
     // Specifier FunDec SEMI
     // e.g. int func(struct var v);
     Node *compSt = find_node(node, _CompSt);
@@ -419,13 +429,13 @@ void read_ExtDef(Node *node) {
     } else
         func_type = read_FunDec(pNode);
     FieldList p_field = func_type->data.field;
-    while (p_field->tail != NULL)p_field = p_field->tail;
+    while (p_field->tail != NULL) p_field = p_field->tail;
     p_field->type = type;
     char *func_name = p_field->name;
     pNode = find_node(node, _CompSt);
     sem_node *prev_func = read_sem_node(func_name);
     if (!pNode && prev_func != NULL) {
-        if (!typeEqual(prev_func->type, func_type))sem_error(19, node->lineno);
+        if (!typeEqual(prev_func->type, func_type)) sem_error(19, node->lineno);
         free(func_type);
         return;
     } else if (!pNode && prev_func == NULL) {
@@ -499,7 +509,7 @@ void read_DecList(Node *node, Type curr_t, Type t) {
     if (t) {
         // error type 15
         // 不允许在struct/function里赋值
-        if (vardec->brother != NULL)sem_error(15, vardec->lineno);
+        if (vardec->brother != NULL) sem_error(15, vardec->lineno);
     }
     read_VarDec(vardec, curr_t, t);
     Node *exp = find_node(vardec, _Exp);
@@ -520,8 +530,10 @@ void read_VarDec(Node *node, Type curr_t, Type t) {
     if (node->type == _ID) {
         // 变量重复定义
         if (write_enable && add_sem_node(node->val.id, curr_t, 0) != 0) {
-            if (t && t->kind == STRUCTURE)sem_error(15, node->lineno);
-            else sem_error(3, node->lineno);
+            if (t && t->kind == STRUCTURE)
+                sem_error(15, node->lineno);
+            else
+                sem_error(3, node->lineno);
         }
         if (t) {
             FieldList field = create_tail_field(t);
@@ -541,7 +553,7 @@ void read_VarDec(Node *node, Type curr_t, Type t) {
 
 void read_DefList(Node *node, Type t) {
     node = node->child;
-    if (node->type == _Def)read_Def(node, t);
+    if (node->type == _Def) read_Def(node, t);
     Node *next = find_node(node, _DefList);
     if (next)
         read_DefList(next, t);
@@ -554,7 +566,7 @@ void read_Def(Node *node, Type t) {
     Node *specifier = find_node(node, _Specifier);
     Type type = NULL;
     if (specifier) type = read_Specifier(specifier);
-    if (!type)return;
+    if (!type) return;
     Node *dec_list = find_node(node, _DecList);
     if (dec_list) read_DecList(dec_list, type, t);
 }

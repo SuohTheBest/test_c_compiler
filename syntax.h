@@ -10,5 +10,5 @@ extern int error_lineno[512];
 extern char type_map[49][16];
 void print_tree(Node *root, int depth);
 void print_error();
-void syntax_analysis(int argc, char **argv);
+int syntax_analysis(char *fileName);
 #endif

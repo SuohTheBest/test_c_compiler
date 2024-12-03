@@ -99,6 +99,12 @@ ID                          [a-zA-Z_][a-zA-Z0-9_]*
                             }
 {RELOP}                     {
                                 NODE_INIT(RELOP)
+                                if(strcmp(yytext,">")==0) yylval->val.i_val = 0;
+                                else if(strcmp(yytext,"<")==0) yylval->val.i_val = 1;
+                                else if(strcmp(yytext,">=")==0) yylval->val.i_val = 2;
+                                else if(strcmp(yytext,"<=")==0) yylval->val.i_val = 3;
+                                else if(strcmp(yytext,"==")==0) yylval->val.i_val = 4;
+                                else if(strcmp(yytext,"!=")==0) yylval->val.i_val = 5;
                                 return RELOP;
                             }
 {PLUS}                      {
