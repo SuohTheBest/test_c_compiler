@@ -84,4 +84,7 @@ void read_Def(Node *node, Type t);
 
 void read_VarDec(Node *node, Type curr_t, Type t);
 
+// TODO
+int get_arr_sz(Type t);
+
 #endif // COMPILER_SEMANTIC_H
