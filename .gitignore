@@ -1,10 +1,12 @@
 /Code
-/cmake-build-debug
-/compiler.zip
 /.idea
 /.vscode
+/cmake-build-debug
 /lex.yy.c
 /syntax.output
 /syntax.tab.h
 /syntax.tab.c
 /scanner
+/ts_out.ir
+/compiler.zip
+/debug_log

@@ -1,6 +1,6 @@
 #include "syntax.h"
 
-#ifdef DEBUG
+#ifdef P_DEBUG
 #define YYDEBUG 1
 #endif
 

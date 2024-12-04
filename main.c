@@ -3,7 +3,7 @@
 #include "translate.h"
 
 int main(int argc, char **argv) {
-#ifdef DEBUG
+#ifdef P_DEBUG
     yydebug = 1;
 #endif
     assert(argc > 2);

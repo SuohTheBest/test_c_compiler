@@ -1,35 +1,37 @@
-all: clean compile run
-vs_debug: clean compile_d
+c_src := translate.c semantic.c syntax.tab.c syntax.c main.c
+other_src := translate.h semantic.h syntax.tab.h syntax.h syntax.y yystype.h lexical.l
+CC := gcc -lfl -o scanner
 
-compile:
-	bison -d -v syntax.y
-	lex lexical.l
-	gcc translate.c semantic.c syntax.tab.c main.c syntax.c -lfl -o scanner
+all: clean cc_compile run
+vs_debug: clean cc_compile_d
 
-compile_d:
-	bison -d -v syntax.y
+clean:
+	rm -rf compiler.zip syntax.output debug_log scanner ts_out.ir
+
+parsing:
+	bison -d syntax.y
 	lex lexical.l
-	gcc translate.c semantic.c syntax.tab.c main.c syntax.c -lfl -g -o scanner
+
+cc_compile: parsing
+	$(CC) $(c_src)
+
+cc_compile_d: parsing
+	$(CC) $(c_src) -g
 
 run:
-	./scanner ./TestCases/Smoke.cmm ./ts.output
+	./scanner ./TestCases/Smoke.cmm ./ts_out.ir
 
 parsing_d:
 	bison -d -v -t syntax.y
 	lex lexical.l
-	gcc syntax.tab.c main.c syntax.c -lfl -DDEBUG -o scanner
+	$(CC) $(c_src) -DP_DEBUG
 	./scanner ./TestCases/Smoke.cmm 2> ./debug_log
 
 pack:
 	rm -f compiler.zip
 	find ./Code -type f ! -iname "makefile" -exec rm -f {} +
-	cp translate.c translate.h syntax.c syntax.h semantic.c semantic.h syntax.tab.c syntax.tab.h syntax.y yystype.h main.c lexical.l lex.yy.c ./Code
+	cp $(c_src) $(other_src) ./Code
 	zip -r compiler.zip ./Code ./report.pdf
-	cd ./Code
-	make
 
 test: all
 	cd ./nju-compiler-test/lab2 && python3 ./test.py -p ../../scanner -g 1
-
-clean:
-	rm -rf syntax.output debug_log scanner ts_out.ir
