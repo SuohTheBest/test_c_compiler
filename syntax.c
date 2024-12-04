@@ -52,7 +52,7 @@ void print_error() {
 
 int syntax_analysis(char *fileName) {
     memset(error_lineno, 0, sizeof(error_lineno));
-    FILE *f = fopen(fileName, "w+");
+    FILE *f = fopen(fileName, "r");
     if (f == NULL) assert(0);
     yyrestart(f);
     yyparse();

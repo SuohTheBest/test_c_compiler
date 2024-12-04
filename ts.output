@@ -1,0 +1,32 @@
+FUNCTION multiplyNumbers :
+PARAM n
+t0 := n
+t1 := #1
+IF t0 >= t1 GOTO label0
+GOTO label1
+LABEL label0 :
+t3 := n
+t6 := n
+t7 := #1
+t5 := t6 - t7
+ARG t5
+t4 := CALL multiplyNumbers
+t2 := t3 * t4
+RETURN t2
+GOTO label2
+LABEL label1 :
+t8 := #1
+RETURN t8
+LABEL label2 :
+
+FUNCTION main :
+READ t9
+x := t9
+t_ := x
+t11 := x
+ARG t11
+t10 := CALL multiplyNumbers
+WRITE t10
+t_ := #0
+t12 := #0
+RETURN t12

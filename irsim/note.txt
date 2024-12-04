@@ -1,0 +1,3 @@
+command:
+python3.8 irsim.pyc
+sudo apt install libxcb-xinerama0

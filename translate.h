@@ -40,8 +40,7 @@ char *translate_AssExp(Node *tree_node, char *place);
 
 char *translate_CulExp(Node *tree_node, char *place);
 
-// todo
-char *get_arrLocation(Node *tree_node, char *place);
+char *get_arrLocation(Node *tree_node, char *place, Type *eleType);
 
 char *get_mem(char *varName);
 
