@@ -1,6 +1,7 @@
 #include "semantic.h"
 #include "syntax.h"
 #include "translate.h"
+#include "generator.h"
 
 int main(int argc, char **argv) {
 #ifdef P_DEBUG
@@ -14,5 +15,6 @@ int main(int argc, char **argv) {
     if (err_flag) return 0;
     err_flag = translate_code(argv[2], tree_root);
     if (err_flag) return 0;
+    generate_mips(argv[2]);
     return 0;
 }
