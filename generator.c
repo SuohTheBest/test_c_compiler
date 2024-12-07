@@ -1,21 +1,22 @@
 #include <string.h>
 #include <malloc.h>
 #include <assert.h>
-#include <limits.h>
 #include <stdlib.h>
 #include "generator.h"
 
 #define NEXT_LINE   free(line_str);\
                     curr_line = curr_line->next;\
-                    if(!curr_line)return;\
-                    line_str = strdup(curr_line->line);\
-                    token = next_token(line_str);
+                    if(curr_line){ \
+                        line_str = strdup(curr_line->line);\
+                        token = next_token(line_str);      \
+                    }
 
 extern char *midCode;
 
 ir_list_node ir_list;
 ir_list_node *curr_func;
 var_list_node var_list;
+var_list_node param_list;
 FILE *f;
 int reg_counter = 1;
 
@@ -30,11 +31,12 @@ void split_ir() {
         p->line = line;
         line = strtok(NULL, "\n");
     }
+    p->next = NULL;
     curr_func = &ir_list;
 }
 
-void var_add_tail(int size, char *name) {
-    var_list_node *p = &var_list;
+void var_add_tail(var_list_node *head, int size, char *name) {
+    var_list_node *p = head;
     while (p->next != NULL) {
         p = p->next;
         if (strcmp(p->name, name) == 0)return;
@@ -56,15 +58,16 @@ int var_find(char *name) {
     assert(0);
 }
 
-void free_var_list() {
-    var_list_node *p = &var_list, *next = var_list.next;
-    free(p->name);
-    while (next != NULL) {
-        free(next->name);
-        p = next;
-        next = next->next;
+void free_var_list(var_list_node *head) {
+    var_list_node *p = head->next, *next;
+    while (p != NULL) {
+        next = p->next;
+        free(p->name);
         free(p);
+        p = next;
     }
+    head->next = NULL;
+    head->size = 0;
 }
 
 int reg(char *name) {
@@ -86,26 +89,48 @@ void scan_local_var() {
     token = next_token(NULL);//func_name
     var_list.name = strdup(token);
     NEXT_LINE
-    while (strcmp(token, "FUNCTION") != 0 && token != NULL) {
+    while (curr_line != NULL && strcmp(token, "FUNCTION") != 0) {
         // read a line
         if (strcmp(token, "PARAM") == 0) {
             token = next_token(NULL);
-            var_add_tail(4, token);
+            var_add_tail(&param_list, 4, token);
         } else if (strcmp(token, "DEC") == 0) {
             next_token(NULL);
             int size = atoi(next_token(NULL));
             NEXT_LINE
-            var_add_tail(size, token);
+            var_add_tail(&var_list, size, token);
         } else if (token[0] == 't') {
             // l-vals
-            var_add_tail(4, token);
+            var_add_tail(&var_list, 4, token);
         }
         NEXT_LINE
     }
+    int size = 0;
+    var_list_node *p = &var_list;
+    while (p->next != NULL) {
+        p = p->next;
+        size += p->size;
+    }
+    var_list.size = size + 8;
 }
 
 void generate_function() {
-
+    fprintf(f, "%s:\n", var_list.name);
+    fprintf(f, "# function init\n");
+    int stack_size = var_list.size;
+    fprintf(f, "addiu   $sp,$sp,-%d\n"
+               "sw      $31,%d($sp)\n"
+               "sw      $fp,%d($sp)\n"
+               "move    $fp,$sp\n", stack_size, stack_size - 4, stack_size - 8);
+    ir_list_node *curr_line = curr_func->next;
+    char *line_str = strdup(curr_line->line);
+    char *token = next_token(line_str);
+    while (curr_line != NULL && strcmp(token, "FUNCTION") != 0) {
+        // todo
+        NEXT_LINE
+    }
+    fprintf(f, "\n");
+    curr_func = curr_line;
 }
 
 void generate_mips(char *output_file) {
@@ -123,7 +148,8 @@ void generate_mips(char *output_file) {
         }
         scan_local_var();
         generate_function();
-        free_var_list();
+        free_var_list(&var_list);
+        free_var_list(&param_list);
     }
     end:
     fclose(f);
