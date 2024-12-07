@@ -18,7 +18,7 @@ ir_list_node *curr_func;
 var_list_node var_list;
 var_list_node param_list;
 FILE *f;
-int reg_counter = 1;
+int reg_counter = 4;
 
 void split_ir() {
     char *line = strtok(midCode, "\n");
@@ -91,6 +91,7 @@ void scan_local_var() {
     NEXT_LINE
     while (curr_line != NULL && strcmp(token, "FUNCTION") != 0) {
         // read a line
+        // todo 记录最大传参个数
         if (strcmp(token, "PARAM") == 0) {
             token = next_token(NULL);
             var_add_tail(&param_list, 4, token);
@@ -119,7 +120,7 @@ void generate_function() {
     fprintf(f, "# function init\n");
     int stack_size = var_list.size;
     fprintf(f, "addiu   $sp,$sp,-%d\n"
-               "sw      $31,%d($sp)\n"
+               "sw      $ra,%d($sp)\n"
                "sw      $fp,%d($sp)\n"
                "move    $fp,$sp\n", stack_size, stack_size - 4, stack_size - 8);
     ir_list_node *curr_line = curr_func->next;
@@ -127,8 +128,24 @@ void generate_function() {
     char *token = next_token(line_str);
     while (curr_line != NULL && strcmp(token, "FUNCTION") != 0) {
         // todo
+        if (strcmp(token, "LABEL") == 0) {
+            token = next_token(NULL);
+            fprintf(f, "%s:\n", token);
+        } else if (strcmp(token, "GOTO") == 0) {
+            token = next_token(NULL);
+            fprintf(f, "j %s\n", token);
+        } else if (strcmp(token, "RETURN") == 0) {
+
+        } else if (strcmp(token, "IF") == 0) {
+
+        }
         NEXT_LINE
     }
+    fprintf(f, "move    $sp,$fp\n"
+               "lw      $ra,%d($sp)\n"
+               "lw      $fp,%d($sp)\n"
+               "addiu   $sp,$sp,%d\n"
+               "jr      $ra\n", stack_size - 4, stack_size - 8, stack_size);
     fprintf(f, "\n");
     curr_func = curr_line;
 }
