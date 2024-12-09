@@ -1,5 +1,5 @@
-c_src := translate.c semantic.c syntax.tab.c syntax.c main.c
-other_src := translate.h semantic.h syntax.tab.h syntax.h syntax.y yystype.h lexical.l
+c_src := generator.c translate.c semantic.c syntax.tab.c syntax.c main.c
+other_src := generator.h translate.h semantic.h syntax.tab.h syntax.h syntax.y yystype.h lexical.l
 CC := gcc -lfl -o scanner
 
 all: clean cc_compile run

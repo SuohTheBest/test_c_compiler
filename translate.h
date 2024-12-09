@@ -3,6 +3,8 @@
 
 #include "semantic.h"
 
+extern char *midCode;
+
 typedef struct ArgsList {
     char argName[64];
     struct ArgsList *next;
