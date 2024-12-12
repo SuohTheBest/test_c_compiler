@@ -13,7 +13,7 @@ FILE *out_put_file;
 int reg_free_flag[10];
 
 char *my_strdup(const char *origin) {
-    char *ans = malloc(strlen(origin + 1));
+    char *ans = malloc(strlen(origin) + 1);
     strcpy(ans, origin);
     return ans;
 }
@@ -231,25 +231,25 @@ void generate_assign(ir_list_node *code) {
     int reg1 = reg(var1);
     int reg2 = reg(var2);
     switch (op) {
-        case '+':
-            fprintf(out_put_file, "add     $t%d, $t%d, $t%d\n",
-                    reg0, reg1, reg2);
-            break;
-        case '-':
-            fprintf(out_put_file, "sub     $t%d, $t%d, $t%d\n",
-                    reg0, reg1, reg2);
-            break;
-        case '*':
-            fprintf(out_put_file, "mul     $t%d, $t%d, $t%d\n",
-                    reg0, reg1, reg2);
-            break;
-        case '/':
-            fprintf(out_put_file, "div     $t%d, $t%d\n"
-                                  "mflo    $t%d\n",
-                    reg1, reg2, reg0);
-            break;
-        default:
-            break;
+    case '+':
+        fprintf(out_put_file, "add     $t%d, $t%d, $t%d\n",
+                reg0, reg1, reg2);
+        break;
+    case '-':
+        fprintf(out_put_file, "sub     $t%d, $t%d, $t%d\n",
+                reg0, reg1, reg2);
+        break;
+    case '*':
+        fprintf(out_put_file, "mul     $t%d, $t%d, $t%d\n",
+                reg0, reg1, reg2);
+        break;
+    case '/':
+        fprintf(out_put_file, "div     $t%d, $t%d\n"
+                              "mflo    $t%d\n",
+                reg1, reg2, reg0);
+        break;
+    default:
+        break;
     }
     re_reg(var0, reg0, 1);
     re_reg(var1, reg1, 0);
