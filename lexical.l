@@ -41,6 +41,7 @@ RC                          \}
 ID                          [a-zA-Z_][a-zA-Z0-9_]*
 %%
 [ \r\t\n]                   {}
+"\r\n"                      {}
 {LCOM}                      {
                                 char c = input();
                                 while (c != '\n' && c != EOF)
