@@ -267,7 +267,7 @@ int reg(char *name) {
                               "lw      $t%d, 0($t%d)\n",
                 new_reg, offset, new_reg, new_reg);
     } else if (name[0] == '&') {
-        fprintf(out_put_file, "addi    $t%d, %d($fp)\n",
+        fprintf(out_put_file, "addi    $t%d, $fp, %d\n",
                 new_reg, offset);
     } else {
         fprintf(out_put_file, "lw      $t%d, %d($fp)\n",
