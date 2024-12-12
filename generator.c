@@ -12,6 +12,12 @@ var_list_node *param_list;
 FILE *out_put_file;
 int reg_free_flag[10];
 
+char *my_strdup(const char *origin) {
+    char *ans = malloc(strlen(origin + 1));
+    strcpy(ans, origin);
+    return ans;
+}
+
 void generate_mips(char *midCode, char *output_file) {
     out_put_file = fopen(output_file, "w+");
     if (out_put_file == NULL) assert(0);
@@ -69,11 +75,11 @@ void split_ir(char *midCode) {
 }
 
 void scan_local_var(ir_list_node *code) {
-    char *line_str = strdup(code->line);
+    char *line_str = my_strdup(code->line);
     char *token = next_token(line_str);
     token = next_token(NULL); // func_name
     var_list = calloc(1, sizeof(var_list_node));
-    var_list->name = strdup(token);
+    var_list->name = my_strdup(token);
     var_list->next = NULL;
     var_list->size = 8;
     param_list = calloc(1, sizeof(var_list_node));
@@ -82,7 +88,7 @@ void scan_local_var(ir_list_node *code) {
     param_list->size = 0;
     code = code->next;
     while (code != NULL) {
-        line_str = strdup(code->line);
+        line_str = my_strdup(code->line);
         token = next_token(line_str);
         if (strcmp(token, "FUNCTION") == 0) break;
         if (strcmp(token, "PARAM") == 0) {
@@ -113,7 +119,7 @@ int var_add_tail(var_list_node *head, int size, char *name) {
     }
     p->next = calloc(1, sizeof(var_list_node));
     p->next->size = size;
-    p->next->name = strdup(name);
+    p->next->name = my_strdup(name);
     p->next->next = NULL;
     return size;
 }
@@ -131,7 +137,7 @@ ir_list_node *generate_function(ir_list_node *code) {
             frame_size, frame_size - 4, frame_size - 8, frame_size);
     code = code->next;
     while (code != NULL) {
-        char *line_str = strdup(code->line);
+        char *line_str = my_strdup(code->line);
 #ifdef _DEBUG
         fprintf(out_put_file, "# code: %s\n", line_str);
 #endif
@@ -186,7 +192,7 @@ ir_list_node *generate_function(ir_list_node *code) {
 }
 
 void generate_assign(ir_list_node *code) {
-    char *line_str = strdup(code->line);
+    char *line_str = my_strdup(code->line);
     char *token = next_token(line_str);
     if (strcmp(token, "t_") == 0) return;
     char *var0 = token;
@@ -225,24 +231,25 @@ void generate_assign(ir_list_node *code) {
     int reg1 = reg(var1);
     int reg2 = reg(var2);
     switch (op) {
-    case '+':
-        fprintf(out_put_file, "add     $t%d, $t%d, $t%d\n",
-                reg0, reg1, reg2);
-        break;
-    case '-':
-        fprintf(out_put_file, "sub     $t%d, $t%d, $t%d\n",
-                reg0, reg1, reg2);
-        break;
-    case '*':
-        fprintf(out_put_file, "mul     $t%d, $t%d, $t%d\n",
-                reg0, reg1, reg2);
-        break;
-    case '/':
-        fprintf(out_put_file, "div     $t%d, $t%d\n"
-                              "mflo    $t%d\n",
-                reg1, reg2, reg0);
-        break;
-    default: break;
+        case '+':
+            fprintf(out_put_file, "add     $t%d, $t%d, $t%d\n",
+                    reg0, reg1, reg2);
+            break;
+        case '-':
+            fprintf(out_put_file, "sub     $t%d, $t%d, $t%d\n",
+                    reg0, reg1, reg2);
+            break;
+        case '*':
+            fprintf(out_put_file, "mul     $t%d, $t%d, $t%d\n",
+                    reg0, reg1, reg2);
+            break;
+        case '/':
+            fprintf(out_put_file, "div     $t%d, $t%d\n"
+                                  "mflo    $t%d\n",
+                    reg1, reg2, reg0);
+            break;
+        default:
+            break;
     }
     re_reg(var0, reg0, 1);
     re_reg(var1, reg1, 0);
@@ -307,7 +314,7 @@ ir_list_node *generate_funcall(ir_list_node *code) {
     int argCnt = 0;
     ir_list_node *cur_code = code;
     while (cur_code != NULL) {
-        char *line_str = strdup(cur_code->line);
+        char *line_str = my_strdup(cur_code->line);
         char *token = next_token(line_str);
         if (strcmp(token, "ARG") != 0) break;
         cur_code = cur_code->next;
@@ -315,7 +322,7 @@ ir_list_node *generate_funcall(ir_list_node *code) {
     }
     // insert inversely
     while (code != NULL) {
-        char *line_str = strdup(code->line);
+        char *line_str = my_strdup(code->line);
         char *token = next_token(line_str);
         if (strcmp(token, "ARG") != 0) break;
         token = next_token(NULL);
@@ -325,7 +332,7 @@ ir_list_node *generate_funcall(ir_list_node *code) {
         re_reg(token, var_arg, 0);
         code = code->next;
     }
-    char *line_str = strdup(code->line);
+    char *line_str = my_strdup(code->line);
     char *token = next_token(line_str);
     char *val0 = token;
     token = next_token(NULL);
@@ -342,7 +349,7 @@ ir_list_node *generate_funcall(ir_list_node *code) {
 }
 
 void generate_if(ir_list_node *code) {
-    char *line_str = strdup(code->line);
+    char *line_str = my_strdup(code->line);
     char *token = next_token(line_str);
     char *var_x = next_token(NULL);
     char *op = next_token(NULL);
