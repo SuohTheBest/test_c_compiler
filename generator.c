@@ -203,7 +203,7 @@ void generate_assign(ir_list_node *code) {
             var0 = var0 + 1;
             int reg0 = reg(var0);
             int reg1 = reg(var1);
-            fprintf(out_put_file, "sw      $t%d,(0)$t%d\n",
+            fprintf(out_put_file, "sw      $t%d, (0)$t%d\n",
                     reg1, reg0);
             re_reg(var0, reg0, 0);
             re_reg(var1, reg1, 0);
@@ -254,7 +254,7 @@ int reg(char *name) {
     while (reg_free_flag[new_reg] == 1) new_reg++;
     reg_free_flag[new_reg] = 1;
     if (name[0] == '#') {
-        fprintf(out_put_file, "li      $t%d,%s\n",
+        fprintf(out_put_file, "li      $t%d, %s\n",
                 new_reg, name + 1);
         return new_reg;
     }
