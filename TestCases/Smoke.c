@@ -1,16 +1,14 @@
-int fact(int n) {
-    if (n == 1)
-        return n;
-    else
-        return (n * fact(n - 1));
+int factorial(int m){
+    int f_res = 1;
+    while(m > 1){
+        f_res = f_res * m;
+        m = m - 1;
+    }
+    return f_res;
 }
+
 int main() {
-    int m, result;
-    m = read();
-    if (m > 1)
-        result = fact(m);
-    else
-        result = 1;
-    write(result);
+    int n = read();
+    write(factorial(n));
     return 0;
 }
