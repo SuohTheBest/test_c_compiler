@@ -14,32 +14,26 @@ typedef struct var_list_node {
 
 void generate_mips(char *midCode, char *output_file);
 
+void generate_preCode();
+
 void split_ir(char *midCode);
 
 void scan_local_var(ir_list_node *code);
 
-void generate_function(ir_list_node *code);
-
 int var_add_tail(var_list_node *head, int size, char *name);
 
-void generate_assign(ir_list_node *code);
+void generate_function(ir_list_node *code);
 
-// todo
-// todo: copy read/write
-// note: #num / *var / &var
 int reg(char *name);
+
+int var_offset(char *var_name);
 
 void re_reg(char *name, int reg, int need_write_back);
 
-void generate_return(ir_list_node *code);
+ir_list_node *generate_funcall(ir_list_node *code);
+
+void generate_assign(ir_list_node *code);
 
 void generate_if(ir_list_node *code);
 
-void generate_read(ir_list_node *code);
-
-void generate_write(ir_list_node *code);
-
-ir_list_node *generate_funcall(ir_list_node *code);
-
-void genAssign_leftStar(ir_list_node *code);
 #endif // COMPILER_GENERATOR_H

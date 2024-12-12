@@ -1,5 +1,4 @@
 int multiplyNumbers(int n) {
-  int c[10];
   if (n >= 1)
     return n * multiplyNumbers(n - 1);
   else

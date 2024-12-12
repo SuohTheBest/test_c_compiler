@@ -4,19 +4,18 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define next_token(line) strtok(line, " ")
+
 ir_list_node *ir_list;
 var_list_node *var_list;
 var_list_node *param_list;
 FILE *out_put_file;
-int reg_counter = 1;
-
-char *next_token(char *line) {
-    return strtok(line, " ");
-}
+int reg_free_flag[10];
 
 void generate_mips(char *midCode, char *output_file) {
     out_put_file = fopen(output_file, "w+");
     if (out_put_file == NULL) assert(0);
+    generate_preCode();
     split_ir(midCode);
     char op[64];
     ir_list_node *p = ir_list;
@@ -29,6 +28,29 @@ void generate_mips(char *midCode, char *output_file) {
         p = p->next;
     }
     fclose(out_put_file);
+}
+
+void generate_preCode() {
+    fprintf(out_put_file, ".data\n"
+                          "_prompt: .asciiz \"Enter an integer:\"\n"
+                          "_ret: .asciiz \"\n\"\n"
+                          ".globl main\n"
+                          "read:\n"
+                          "li      $v0, 4\n"
+                          "la      $a0, _prompt\n"
+                          "syscall\n"
+                          "li      $v0, 5\n"
+                          "syscall\n"
+                          "jr      $ra\n\n"
+
+                          "write:\n"
+                          "li      $v0, 1\n"
+                          "syscall\n"
+                          "li      $v0, 4\n"
+                          "la      $a0, _ret\n"
+                          "syscall\n"
+                          "move    $v0, $0\n"
+                          "jr      $ra\n\n");
 }
 
 void split_ir(char *midCode) {
@@ -95,14 +117,15 @@ void generate_function(ir_list_node *code) {
     fprintf(out_put_file, "%s:\n", var_list->name);
     fprintf(out_put_file, "# function init\n");
     int frame_size = var_list->size;
-    fprintf(out_put_file, "subu    $sp,$sp,%d\n"
+    fprintf(out_put_file, "addi    $sp,$sp,-%d\n"
                           "sw      $ra,%d($sp)\n"
                           "sw      $fp,%d($sp)\n"
-                          "move    $fp,$sp\n",
-            frame_size, frame_size - 4, frame_size - 8);
+                          "addi    $fp,$sp,%d\n",
+            frame_size, frame_size - 4, frame_size - 8, frame_size);
     code = code->next;
     while (code != NULL) {
         char *line_str = strdup(code->line);
+        fprintf(out_put_file, "# code: %s\n", line_str);
         char *token = next_token(line_str);
         if (strcmp(token, "FUNCTION") == 0) break;
         if (strcmp(token, "PARAM") == 0 || strcmp(token, "DEC") == 0) {
@@ -116,13 +139,32 @@ void generate_function(ir_list_node *code) {
             token = next_token(NULL);
             fprintf(out_put_file, "j %s\n", token);
         } else if (strcmp(token, "RETURN") == 0) {
-            generate_return(code);
+            token = next_token(NULL);
+            int val_reg = reg(token);
+            fprintf(out_put_file, "move    $v0,$t%d\n",
+                    val_reg);
+            re_reg(token, val_reg, 0);
+            fprintf(out_put_file, "lw      $ra,%d($sp)\n"
+                                  "lw      $fp,%d($sp)\n"
+                                  "addi    $sp,$sp,%d\n"
+                                  "jr      $ra\n",
+                    frame_size - 4, frame_size - 8, frame_size);
         } else if (strcmp(token, "IF") == 0) {
             generate_if(code);
         } else if (strcmp(token, "READ") == 0) {
-            generate_read(code);
+            fprintf(out_put_file, "jal     read\n");
+            token = next_token(NULL);
+            int val_reg = reg(token);
+            fprintf(out_put_file, "move    $t%d,$v0\n",
+                    val_reg);
+            re_reg(token, val_reg, 1);
         } else if (strcmp(token, "WRITE") == 0) {
-            generate_write(code);
+            token = next_token(NULL);
+            int val_reg = reg(token);
+            fprintf(out_put_file, "move    $a0,$t%d\n",
+                    val_reg);
+            re_reg(token, val_reg, 0);
+            fprintf(out_put_file, "jal     write\n");
         } else if (strcmp(token, "ARG") == 0) {
             code = generate_funcall(code);
         } else if (strcmp(next_token(NULL), ":=") == 0) {
@@ -130,12 +172,6 @@ void generate_function(ir_list_node *code) {
         }
         code = code->next;
     }
-    fprintf(out_put_file, "move    $sp,$fp\n"
-                          "lw      $ra,%d($sp)\n"
-                          "lw      $fp,%d($sp)\n"
-                          "addiu   $sp,$sp,%d\n"
-                          "jr      $ra\n",
-            frame_size - 4, frame_size - 8, frame_size);
     fprintf(out_put_file, "\n");
 }
 
@@ -143,10 +179,6 @@ void generate_assign(ir_list_node *code) {
     char *line_str = strdup(code->line);
     char *token = next_token(line_str);
     if (strcmp(token, "t_") == 0) return;
-    if (token[0] == '*') {
-        genAssign_leftStar(code);
-        return;
-    }
     char *var0 = token;
     token = next_token(NULL);
     token = next_token(NULL);
@@ -157,12 +189,24 @@ void generate_assign(ir_list_node *code) {
     char *var1 = token;
     token = next_token(NULL);
     if (token == NULL) {
-        int reg0 = reg(var0);
-        int reg1 = reg(var1);
-        // todo
-        re_reg(var0, reg0, 1);
-        re_reg(var1, reg1, 0);
-        return;
+        if (var0[0] == '*') {
+            var0 = var0 + 1;
+            int reg0 = reg(var0);
+            int reg1 = reg(var1);
+            fprintf(out_put_file, "sw      $t%d,(0)$t%d\n",
+                    reg1, reg0);
+            re_reg(var0, reg0, 0);
+            re_reg(var1, reg1, 0);
+            return;
+        } else {
+            int reg0 = reg(var0);
+            int reg1 = reg(var1);
+            fprintf(out_put_file, "move    $t%d,$t%d\n",
+                    reg0, reg1);
+            re_reg(var0, reg0, 1);
+            re_reg(var1, reg1, 0);
+            return;
+        }
     }
     char op = token[0];
     token = next_token(NULL);
@@ -170,11 +214,24 @@ void generate_assign(ir_list_node *code) {
     int reg0 = reg(var0);
     int reg1 = reg(var1);
     int reg2 = reg(var2);
-    switch (op) { // todo
-    case '+': break;
-    case '-': break;
-    case '*': break;
-    case '/': break;
+    switch (op) {
+    case '+':
+        fprintf(out_put_file, "add     $t%d,$t%d,$t%d\n",
+                reg0, reg1, reg2);
+        break;
+    case '-':
+        fprintf(out_put_file, "sub     $t%d,$t%d,$t%d\n",
+                reg0, reg1, reg2);
+        break;
+    case '*':
+        fprintf(out_put_file, "mul     $t%d,$t%d,$t%d\n",
+                reg0, reg1, reg2);
+        break;
+    case '/':
+        fprintf(out_put_file, "div     $t%d,$t%d\n"
+                              "mflo    $t%d\n",
+                reg1, reg2, reg0);
+        break;
     default: break;
     }
     re_reg(var0, reg0, 1);
@@ -183,24 +240,60 @@ void generate_assign(ir_list_node *code) {
 }
 
 int reg(char *name) {
-    int new_reg = reg_counter++;
-    if (name[0] == '*') {        // todo
-    } else if (name[0] == '&') { // todo
-    } else if (name[0] == '#') { // todo
-    } else {                     // todo
+    int new_reg = 0;
+    while (reg_free_flag[new_reg] == 1) new_reg++;
+    if (name[0] == '#') {
+        fprintf(out_put_file, "li      $t%d,%s\n",
+                new_reg, name + 1);
+        return new_reg;
     }
+    char *var_name = name;
+    if (name[0] == '*' || name[0] == '&')
+        var_name = var_name + 1;
+    int offset = var_offset(var_name);
+    if (name[0] == '*') {
+        fprintf(out_put_file, "lw      $t%d,%d($fp)\n"
+                              "lw      $t%d,0($t%d)\n",
+                new_reg, offset, new_reg, new_reg);
+    } else if (name[0] == '&') {
+        fprintf(out_put_file, "addi    $t%d,%d($fp)\n",
+                new_reg, offset);
+    } else {
+        fprintf(out_put_file, "lw      $t%d,%d($fp)\n",
+                new_reg, offset);
+    }
+    return new_reg;
+}
+
+int var_offset(char *var_name) {
+    int offset = -8;
+    for (var_list_node *p = var_list; p != NULL; p = p->next) {
+        if (strcmp(p->name, var_name) == 0)
+            return offset;
+        offset -= p->size;
+    }
+    offset = 0;
+    for (var_list_node *p = param_list; p != NULL; p = p->next) {
+        offset += p->size;
+        if (strcmp(p->name, var_name) == 0)
+            return offset;
+    }
+    assert(0);
+    return offset;
 }
 
 void re_reg(char *name, int reg, int need_write_back) {
-    reg_counter--;
-    if (!need_write_back) return;
-    if (name[0] == '*' || name[0] == '&' || name[0] == '#') return;
-    // todo
+    reg_free_flag[reg] = 0;
+    if (!need_write_back || name[0] == '*' || name[0] == '&' || name[0] == '#')
+        return;
+    int offset = var_offset(name);
+    fprintf(out_put_file, "sw      $t%d,%d($fp)\n",
+            reg, offset);
 }
 
 ir_list_node *generate_funcall(ir_list_node *code) {
+    // count args numbers
     int argCnt = 0;
-    // 统计参数数量
     ir_list_node *cur_code = code;
     while (cur_code != NULL) {
         char *line_str = strdup(cur_code->line);
@@ -209,28 +302,63 @@ ir_list_node *generate_funcall(ir_list_node *code) {
         cur_code = cur_code->next;
         argCnt++;
     }
-    // 倒序插入
-    ir_list_node *cur_code = code;
-    while (cur_code != NULL) {
-        char *line_str = strdup(cur_code->line);
+    // insert inversely
+    while (code != NULL) {
+        char *line_str = strdup(code->line);
         char *token = next_token(line_str);
         if (strcmp(token, "ARG") != 0) break;
         token = next_token(NULL);
         int var_arg = reg(token);
-        // todo: $arg -> cnt*4($sp)
+        fprintf(out_put_file, "sw      $t%d,%d($sp)\n",
+                var_arg, argCnt * 4);
         re_reg(token, var_arg, 0);
-        cur_code = cur_code->next;
+        code = code->next;
         argCnt--;
     }
-    char *line_str = strdup(cur_code->line);
+    char *line_str = strdup(code->line);
     char *token = next_token(line_str);
     char *val0 = token;
     token = next_token(NULL);
     token = next_token(NULL);
     token = next_token(NULL);
     char *fun_name = token;
-    // todo: jal fun
+    fprintf(out_put_file, "jal     %s\n",
+            fun_name);
     int reg0 = reg(val0);
-    // todo: $v0 -> $reg0;
+    fprintf(out_put_file, "move    $t%d,$v0\n",
+            reg0);
     re_reg(val0, reg0, 1);
+}
+
+void generate_if(ir_list_node *code) {
+    char *line_str = strdup(code->line);
+    char *token = next_token(line_str);
+    char *var_x = next_token(NULL);
+    char *op = next_token(NULL);
+    char *var_y = next_token(NULL);
+    token = next_token(NULL);
+    char *lable_z = next_token(NULL);
+    int reg_x = reg(var_x);
+    int reg_y = reg(var_y);
+    if (strcmp(op, "==") == 0) {
+        fprintf(out_put_file, "beq     $t%d,$t%d,%s\n",
+                reg_x, reg_y, lable_z);
+    } else if (strcmp(op, "!=") == 0) {
+        fprintf(out_put_file, "bne     $t%d,$t%d,%s\n",
+                reg_x, reg_y, lable_z);
+    } else if (strcmp(op, ">") == 0) {
+        fprintf(out_put_file, "bgt     $t%d,$t%d,%s\n",
+                reg_x, reg_y, lable_z);
+    } else if (strcmp(op, "<") == 0) {
+        fprintf(out_put_file, "blt     $t%d,$t%d,%s\n",
+                reg_x, reg_y, lable_z);
+    } else if (strcmp(op, ">=") == 0) {
+        fprintf(out_put_file, "bge     $t%d,$t%d,%s\n",
+                reg_x, reg_y, lable_z);
+    } else if (strcmp(op, "<=") == 0) {
+        fprintf(out_put_file, "ble     $t%d,$t%d,%s\n",
+                reg_x, reg_y, lable_z);
+    } else {
+        assert(0);
+    }
 }
