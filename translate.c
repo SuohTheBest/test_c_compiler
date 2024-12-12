@@ -32,10 +32,13 @@ int translate_code(char *output_file, Node *tree_root) {
         printf("Cannot translate: Code contains variables or parameters of structure type.");
         return ts_error_flag;
     }
-//    FILE *f = fopen(output_file, "w+");
-//    if (f == NULL) assert(0);
-//    fputs(midCode, f);
-//    fclose(f);
+#ifdef _DEBUG
+    output_file = strcatm(output_file, ".", "ir");
+    FILE *f = fopen(output_file, "w+");
+    if (f == NULL) assert(0);
+    fputs(midCode, f);
+    fclose(f);
+#endif
     return ts_error_flag;
 }
 
@@ -137,17 +140,17 @@ char *translate_Stmt(Node *tree_node) {
     if (tree_node->type == _Exp) {
         return translate_Exp(tree_node, NULL);
     }
-        // CompSt
+    // CompSt
     else if (tree_node->type == _CompSt) {
         return translate_CompSt(tree_node);
     }
-        // RETURN Exp SEMI
+    // RETURN Exp SEMI
     else if (tree_node->type == _RETURN) {
         char *t1 = new_tmp();
         char *s1 = translate_Exp(find_brother(tree_node, _Exp), t1);
         return strcatm(s1, "\nRETURN ", t1);
     }
-        // WHILE LP Exp RP Stmt1
+    // WHILE LP Exp RP Stmt1
     else if (tree_node->type == _WHILE) {
         char *label1 = new_label();
         char *label2 = new_label();
@@ -203,7 +206,7 @@ char *translate_Exp(Node *tree_node, char *place) {
             return strcatm(place, " := ", tree_node->val.id);
         return translate_funcCall(tree_node, place);
     }
-        // (exp) -exp !exp
+    // (exp) -exp !exp
     else if (tree_node->type == _LP) {
         char *t1 = new_tmp();
         char *s1 = translate_Exp(tree_node->brother, t1);
@@ -220,31 +223,31 @@ char *translate_Exp(Node *tree_node, char *place) {
     // exp ... exp
     Node *op = tree_node->brother;
     switch (op->type) {
-        case _ASSIGNOP:
-            return translate_AssExp(tree_node, place);
-            break;
-        case _AND:
-        case _OR:
-        case _RELOP:
-            return translate_CondExp(expNode, place);
-            break;
-        case _PLUS:
-        case _MINUS:
-        case _STAR:
-        case _DIV:
-            return translate_CulExp(tree_node, place);
-            break;
-        case _LB: // arr[exp]
-        {
-            char *t1 = new_tmp();
-            char *s1 = get_arrLocation(expNode, t1, malloc(sizeof(Type)));
-            char *s2 = strcatm(place, " := *", t1);
-            return strcatm(s1, "\n", s2);
-            break;
-        }
-        default:
-            ts_error_flag = 1;
-            break;
+    case _ASSIGNOP:
+        return translate_AssExp(tree_node, place);
+        break;
+    case _AND:
+    case _OR:
+    case _RELOP:
+        return translate_CondExp(expNode, place);
+        break;
+    case _PLUS:
+    case _MINUS:
+    case _STAR:
+    case _DIV:
+        return translate_CulExp(tree_node, place);
+        break;
+    case _LB: // arr[exp]
+    {
+        char *t1 = new_tmp();
+        char *s1 = get_arrLocation(expNode, t1, malloc(sizeof(Type)));
+        char *s2 = strcatm(place, " := *", t1);
+        return strcatm(s1, "\n", s2);
+        break;
+    }
+    default:
+        ts_error_flag = 1;
+        break;
     }
     return "";
 }
@@ -380,20 +383,20 @@ char *translate_AssExp(Node *tree_node, char *place) {
 char *translate_CulExp(Node *tree_node, char *place) {
     char op[2] = {0};
     switch (tree_node->brother->type) {
-        case _PLUS:
-            op[0] = '+';
-            break;
-        case _MINUS:
-            op[0] = '-';
-            break;
-        case _STAR:
-            op[0] = '*';
-            break;
-        case _DIV:
-            op[0] = '/';
-            break;
-        default:
-            break;
+    case _PLUS:
+        op[0] = '+';
+        break;
+    case _MINUS:
+        op[0] = '-';
+        break;
+    case _STAR:
+        op[0] = '*';
+        break;
+    case _DIV:
+        op[0] = '/';
+        break;
+    default:
+        break;
     }
     char *t1 = new_tmp();
     char *t2 = new_tmp();

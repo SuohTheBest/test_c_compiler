@@ -4,12 +4,14 @@ target := ./MakeOut/compiler
 CC := gcc -lfl -o $(target)
 
 all: clean cc_compile run
+debug: clean cc_compile_d run
 vs_debug: clean cc_compile_d
 
 clean:
 	rm -rf ./MakeOut
 
 parsing:
+	mkdir MakeOut
 	bison -d syntax.y
 	lex lexical.l
 
@@ -17,16 +19,18 @@ cc_compile: parsing
 	$(CC) $(c_src)
 
 cc_compile_d: parsing
-	$(CC) $(c_src) -g
+	$(CC) $(c_src) -g -D_DEBUG
 
 run:
-	$(target) ./TestCases/Smoke.cmm ./MakeOut/output.s
+	$(target) ./TestCases/Smoke.c ./MakeOut/output.s
 
 pack:
-	rm -f ./MakeOut/compiler.zip
-	find ./Code -type f ! -iname "makefile" -exec rm -f {} +
+	rm -rf ./MakeOut/compiler.zip ./Code
+	mkdir Code
 	cp $(c_src) $(other_src) ./Code
-	zip -r ./MakeOut/compiler.zip ./Code ./Reports/report.pdf
+	cp ./Reports/report.pdf ./
+	zip -r ./MakeOut/compiler.zip ./Code ./report.pdf
+	rm -rf ./report.pdf ./Code
 
 parsing_d:
 	bison -d -v -t syntax.y

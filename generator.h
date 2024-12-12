@@ -22,7 +22,7 @@ void scan_local_var(ir_list_node *code);
 
 int var_add_tail(var_list_node *head, int size, char *name);
 
-void generate_function(ir_list_node *code);
+ir_list_node *generate_function(ir_list_node *code);
 
 int reg(char *name);
 
