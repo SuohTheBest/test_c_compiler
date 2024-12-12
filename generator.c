@@ -124,10 +124,10 @@ ir_list_node *generate_function(ir_list_node *code) {
     fprintf(out_put_file, "# function init\r\n");
 #endif
     int frame_size = var_list->size;
-    fprintf(out_put_file, "addi    $sp,$sp,-%d\r\n"
-                          "sw      $ra,%d($sp)\r\n"
-                          "sw      $fp,%d($sp)\r\n"
-                          "addi    $fp,$sp,%d\r\n",
+    fprintf(out_put_file, "addi    $sp, $sp, -%d\r\n"
+                          "sw      $ra, %d($sp)\r\n"
+                          "sw      $fp, %d($sp)\r\n"
+                          "addi    $fp, $sp, %d\r\n",
             frame_size, frame_size - 4, frame_size - 8, frame_size);
     code = code->next;
     while (code != NULL) {
@@ -150,12 +150,12 @@ ir_list_node *generate_function(ir_list_node *code) {
         } else if (strcmp(token, "RETURN") == 0) {
             token = next_token(NULL);
             int val_reg = reg(token);
-            fprintf(out_put_file, "move    $v0,$t%d\r\n",
+            fprintf(out_put_file, "move    $v0, $t%d\r\n",
                     val_reg);
             re_reg(token, val_reg, 0);
-            fprintf(out_put_file, "lw      $ra,%d($sp)\r\n"
-                                  "lw      $fp,%d($sp)\r\n"
-                                  "addi    $sp,$sp,%d\r\n"
+            fprintf(out_put_file, "lw      $ra, %d($sp)\r\n"
+                                  "lw      $fp, %d($sp)\r\n"
+                                  "addi    $sp, $sp, %d\r\n"
                                   "jr      $ra\r\n",
                     frame_size - 4, frame_size - 8, frame_size);
         } else if (strcmp(token, "IF") == 0) {
@@ -164,13 +164,13 @@ ir_list_node *generate_function(ir_list_node *code) {
             fprintf(out_put_file, "jal     read\r\n");
             token = next_token(NULL);
             int val_reg = reg(token);
-            fprintf(out_put_file, "move    $t%d,$v0\r\n",
+            fprintf(out_put_file, "move    $t%d, $v0\r\n",
                     val_reg);
             re_reg(token, val_reg, 1);
         } else if (strcmp(token, "WRITE") == 0) {
             token = next_token(NULL);
             int val_reg = reg(token);
-            fprintf(out_put_file, "move    $a0,$t%d\r\n",
+            fprintf(out_put_file, "move    $a0, $t%d\r\n",
                     val_reg);
             re_reg(token, val_reg, 0);
             fprintf(out_put_file, "jal     write\r\n");
@@ -211,7 +211,7 @@ void generate_assign(ir_list_node *code) {
         } else {
             int reg0 = reg(var0);
             int reg1 = reg(var1);
-            fprintf(out_put_file, "move    $t%d,$t%d\r\n",
+            fprintf(out_put_file, "move    $t%d, $t%d\r\n",
                     reg0, reg1);
             re_reg(var0, reg0, 1);
             re_reg(var1, reg1, 0);
@@ -226,19 +226,19 @@ void generate_assign(ir_list_node *code) {
     int reg2 = reg(var2);
     switch (op) {
     case '+':
-        fprintf(out_put_file, "add     $t%d,$t%d,$t%d\r\n",
+        fprintf(out_put_file, "add     $t%d, $t%d, $t%d\r\n",
                 reg0, reg1, reg2);
         break;
     case '-':
-        fprintf(out_put_file, "sub     $t%d,$t%d,$t%d\r\n",
+        fprintf(out_put_file, "sub     $t%d, $t%d, $t%d\r\n",
                 reg0, reg1, reg2);
         break;
     case '*':
-        fprintf(out_put_file, "mul     $t%d,$t%d,$t%d\r\n",
+        fprintf(out_put_file, "mul     $t%d, $t%d, $t%d\r\n",
                 reg0, reg1, reg2);
         break;
     case '/':
-        fprintf(out_put_file, "div     $t%d,$t%d\r\n"
+        fprintf(out_put_file, "div     $t%d, $t%d\r\n"
                               "mflo    $t%d\r\n",
                 reg1, reg2, reg0);
         break;
@@ -254,7 +254,7 @@ int reg(char *name) {
     while (reg_free_flag[new_reg] == 1) new_reg++;
     reg_free_flag[new_reg] = 1;
     if (name[0] == '#') {
-        fprintf(out_put_file, "li      $t%d,%s\r\n",
+        fprintf(out_put_file, "li      $t%d, %s\r\n",
                 new_reg, name + 1);
         return new_reg;
     }
@@ -263,14 +263,14 @@ int reg(char *name) {
         var_name = var_name + 1;
     int offset = var_offset(var_name);
     if (name[0] == '*') {
-        fprintf(out_put_file, "lw      $t%d,%d($fp)\r\n"
-                              "lw      $t%d,0($t%d)\r\n",
+        fprintf(out_put_file, "lw      $t%d, %d($fp)\r\n"
+                              "lw      $t%d, 0($t%d)\r\n",
                 new_reg, offset, new_reg, new_reg);
     } else if (name[0] == '&') {
-        fprintf(out_put_file, "addi    $t%d,%d($fp)\r\n",
+        fprintf(out_put_file, "addi    $t%d, %d($fp)\r\n",
                 new_reg, offset);
     } else {
-        fprintf(out_put_file, "lw      $t%d,%d($fp)\r\n",
+        fprintf(out_put_file, "lw      $t%d, %d($fp)\r\n",
                 new_reg, offset);
     }
     return new_reg;
@@ -298,7 +298,7 @@ void re_reg(char *name, int reg, int need_write_back) {
     if (!need_write_back || name[0] == '*' || name[0] == '&' || name[0] == '#')
         return;
     int offset = var_offset(name);
-    fprintf(out_put_file, "sw      $t%d,%d($fp)\r\n",
+    fprintf(out_put_file, "sw      $t%d, %d($fp)\r\n",
             reg, offset);
 }
 
@@ -320,7 +320,7 @@ ir_list_node *generate_funcall(ir_list_node *code) {
         if (strcmp(token, "ARG") != 0) break;
         token = next_token(NULL);
         int var_arg = reg(token);
-        fprintf(out_put_file, "sw      $t%d,%d($sp)\r\n",
+        fprintf(out_put_file, "sw      $t%d, %d($sp)\r\n",
                 var_arg, (--argCnt) * 4);
         re_reg(token, var_arg, 0);
         code = code->next;
@@ -335,7 +335,7 @@ ir_list_node *generate_funcall(ir_list_node *code) {
     fprintf(out_put_file, "jal     %s\r\n",
             fun_name);
     int reg0 = reg(val0);
-    fprintf(out_put_file, "move    $t%d,$v0\r\n",
+    fprintf(out_put_file, "move    $t%d, $v0\r\n",
             reg0);
     re_reg(val0, reg0, 1);
     return code;
@@ -352,22 +352,22 @@ void generate_if(ir_list_node *code) {
     int reg_x = reg(var_x);
     int reg_y = reg(var_y);
     if (strcmp(op, "==") == 0) {
-        fprintf(out_put_file, "beq     $t%d,$t%d,%s\r\n",
+        fprintf(out_put_file, "beq     $t%d, $t%d, %s\r\n",
                 reg_x, reg_y, lable_z);
     } else if (strcmp(op, "!=") == 0) {
-        fprintf(out_put_file, "bne     $t%d,$t%d,%s\r\n",
+        fprintf(out_put_file, "bne     $t%d, $t%d, %s\r\n",
                 reg_x, reg_y, lable_z);
     } else if (strcmp(op, ">") == 0) {
-        fprintf(out_put_file, "bgt     $t%d,$t%d,%s\r\n",
+        fprintf(out_put_file, "bgt     $t%d, $t%d, %s\r\n",
                 reg_x, reg_y, lable_z);
     } else if (strcmp(op, "<") == 0) {
-        fprintf(out_put_file, "blt     $t%d,$t%d,%s\r\n",
+        fprintf(out_put_file, "blt     $t%d, $t%d, %s\r\n",
                 reg_x, reg_y, lable_z);
     } else if (strcmp(op, ">=") == 0) {
-        fprintf(out_put_file, "bge     $t%d,$t%d,%s\r\n",
+        fprintf(out_put_file, "bge     $t%d, $t%d, %s\r\n",
                 reg_x, reg_y, lable_z);
     } else if (strcmp(op, "<=") == 0) {
-        fprintf(out_put_file, "ble     $t%d,$t%d,%s\r\n",
+        fprintf(out_put_file, "ble     $t%d, $t%d, %s\r\n",
                 reg_x, reg_y, lable_z);
     } else {
         assert(0);

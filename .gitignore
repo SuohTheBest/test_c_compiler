@@ -3,3 +3,7 @@
 /.idea
 /.vscode
 /cmake-build-debug
+/syntax.tab.c
+/syntax.tab.h
+/scanner
+/ts_out.ir
