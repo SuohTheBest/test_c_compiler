@@ -26,19 +26,21 @@ int size_of_arr(Type t) {
     return -1;
 }
 
-int translate_code(char *output_file, Node *tree_root) {
+int translate_code(char *output_file, Node *tree_root, int with_ir_output) {
     midCode = translate_midCode(tree_root->child);
     if (ts_error_flag) {
         printf("Cannot translate: Code contains variables or parameters of structure type.");
         return ts_error_flag;
     }
+    if (with_ir_output) {
 #ifdef _DEBUG
-    output_file = strcatm(output_file, ".", "ir");
-    FILE *f = fopen(output_file, "w+");
-    if (f == NULL) assert(0);
-    fputs(midCode, f);
-    fclose(f);
+        output_file = strcatm(output_file, ".", "ir");
 #endif
+        FILE *f = fopen(output_file, "w+");
+        if (f == NULL) assert(0);
+        fputs(midCode, f);
+        fclose(f);
+    }
     return ts_error_flag;
 }
 

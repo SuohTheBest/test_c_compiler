@@ -10,7 +10,7 @@ typedef struct ArgsList {
     struct ArgsList *next;
 } ArgsList;
 
-int translate_code(char *output_file, Node *tree_root);
+int translate_code(char *output_file, Node *tree_root, int with_ir_output);
 
 char *translate_midCode(Node *tree_root);
 
