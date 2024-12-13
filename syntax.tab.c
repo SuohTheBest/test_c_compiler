@@ -487,7 +487,7 @@ union yyalloc
 /* YYFINAL -- State number of the termination state.  */
 #define YYFINAL  15
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   284
+#define YYLAST   295
 
 /* YYNTOKENS -- Number of terminals.  */
 #define YYNTOKENS  31
@@ -548,14 +548,14 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int16 yyrline[] =
 {
-       0,    26,    26,    32,    36,    38,    42,    46,    50,    54,
-      55,    57,    61,    66,    70,    75,    79,    84,    88,    90,
-      95,    99,   103,   105,   109,   113,   115,   119,   124,   129,
-     133,   135,   139,   141,   145,   149,   153,   158,   162,   166,
-     167,   168,   169,   171,   173,   177,   179,   183,   185,   189,
-     194,   198,   203,   207,   211,   215,   219,   223,   227,   231,
-     235,   239,   243,   247,   251,   255,   259,   263,   267,   271,
-     276,   280
+       0,    27,    27,    33,    37,    39,    43,    47,    51,    55,
+      56,    58,    62,    67,    71,    76,    80,    85,    89,    91,
+      96,   100,   104,   106,   110,   114,   116,   120,   125,   130,
+     134,   136,   140,   142,   146,   150,   154,   159,   163,   167,
+     168,   169,   170,   172,   174,   178,   180,   184,   186,   190,
+     195,   199,   204,   208,   212,   216,   220,   224,   228,   232,
+     236,   240,   244,   248,   252,   256,   260,   264,   268,   272,
+     277,   281
 };
 #endif
 
@@ -602,18 +602,18 @@ yysymbol_name (yysymbol_kind_t yysymbol)
    STATE-NUM.  */
 static const yytype_int16 yypact[] =
 {
-     278,    80,   -42,     4,    34,   -42,   278,    56,   -42,    39,
+     289,    80,   -42,     4,    34,   -42,   289,    56,   -42,    39,
       10,   -42,    42,    46,   -42,   -42,   -42,    28,   -42,    64,
       86,    -5,    89,   -42,    63,    91,    10,    10,   -42,   -42,
      -42,    -3,   -42,    73,    99,   -42,   -42,    30,   -42,    52,
      100,   101,    62,   -42,   -42,   117,     3,    12,    90,   117,
      117,   117,   -42,   103,    91,   128,   -42,   108,   -42,    73,
       92,   111,    96,   -42,    98,   -42,   117,   -42,    73,   -42,
-     -42,   142,   102,   117,   105,   117,   104,   248,   -15,   170,
+     -42,   142,   102,   117,   105,   117,   104,   259,   -15,   170,
      -42,   -42,   -42,   117,   117,   117,   117,   117,   117,   117,
      117,   117,   118,   -42,   107,   -42,    10,   -42,   226,   -42,
      -42,    17,   184,    17,   198,   -42,   156,   109,   -42,   226,
-     237,   237,   247,   248,   248,   -15,   -15,   212,   -42,   -42,
+     248,   237,   258,   259,   259,   -15,   -15,   212,   -42,   -42,
      127,    17,   -42,    17,   117,   -42,   -42,    17,   132,   -42,
      -42,   -42,    17,   -42
 };
@@ -685,10 +685,11 @@ static const yytype_int16 yytable[] =
       89,     0,    90,     0,   123,    91,     0,    92,    83,    84,
       85,    86,    87,    88,    89,     0,    90,     0,     0,    91,
      126,    92,    83,    84,    85,    86,    87,    88,    89,     0,
-      90,     0,     0,    91,     0,    92,    86,    87,    88,    89,
-       0,    90,     0,     0,    91,     0,    92,    87,    88,    89,
-      89,    90,    90,     0,    91,    91,    92,    92,    -4,     1,
-       0,     0,     0,     2,     3
+      90,     0,     0,    91,    84,    92,    86,    87,    88,    89,
+       0,    90,     0,     0,    91,     0,    92,    86,    87,    88,
+      89,     0,    90,     0,     0,    91,     0,    92,    87,    88,
+      89,    89,    90,    90,     0,    91,    91,    92,    92,    -4,
+       1,     0,     0,     0,     2,     3
 };
 
 static const yytype_int16 yycheck[] =
@@ -718,10 +719,11 @@ static const yytype_int16 yycheck[] =
       22,    -1,    24,    -1,    26,    27,    -1,    29,    16,    17,
       18,    19,    20,    21,    22,    -1,    24,    -1,    -1,    27,
       28,    29,    16,    17,    18,    19,    20,    21,    22,    -1,
-      24,    -1,    -1,    27,    -1,    29,    19,    20,    21,    22,
-      -1,    24,    -1,    -1,    27,    -1,    29,    20,    21,    22,
-      22,    24,    24,    -1,    27,    27,    29,    29,     0,     1,
-      -1,    -1,    -1,     5,     6
+      24,    -1,    -1,    27,    17,    29,    19,    20,    21,    22,
+      -1,    24,    -1,    -1,    27,    -1,    29,    19,    20,    21,
+      22,    -1,    24,    -1,    -1,    27,    -1,    29,    20,    21,
+      22,    22,    24,    24,    -1,    27,    27,    29,    29,     0,
+       1,    -1,    -1,    -1,     5,     6
 };
 
 /* YYSTOS[STATE-NUM] -- The symbol kind of the accessing symbol of
@@ -1231,593 +1233,593 @@ yyreduce:
   switch (yyn)
     {
   case 2: /* Program: ExtDefList  */
-#line 26 "syntax.y"
+#line 27 "syntax.y"
                                                             {
                                                                 Node **args[8] = {&yyval, &yyvsp[0]};
                                                                 BUILDTREE(Program, 1);
                                                                 tree_root=yyval;
                                                             }
-#line 1241 "syntax.tab.c"
+#line 1243 "syntax.tab.c"
     break;
 
   case 3: /* ExtDefList: ExtDef ExtDefList  */
-#line 32 "syntax.y"
+#line 33 "syntax.y"
                                                             {
                                                                 Node **args[8] = {&yyval, &yyvsp[-1], &yyvsp[0]};
                                                                 BUILDTREE(ExtDefList, 2);
                                                             }
-#line 1250 "syntax.tab.c"
+#line 1252 "syntax.tab.c"
     break;
 
   case 4: /* ExtDefList: %empty  */
-#line 36 "syntax.y"
+#line 37 "syntax.y"
                                                             {   yyval = NULL; }
-#line 1256 "syntax.tab.c"
+#line 1258 "syntax.tab.c"
     break;
 
   case 5: /* ExtDef: Specifier ExtDecList SEMI  */
-#line 38 "syntax.y"
+#line 39 "syntax.y"
                                                             {
                                                                 Node **args[8] = {&yyval, &yyvsp[-2], &yyvsp[-1], &yyvsp[0]};
                                                                 BUILDTREE(ExtDef, 3);
                                                             }
-#line 1265 "syntax.tab.c"
+#line 1267 "syntax.tab.c"
     break;
 
   case 6: /* ExtDef: Specifier SEMI  */
-#line 42 "syntax.y"
+#line 43 "syntax.y"
                                                             {
                                                                 Node **args[8] = {&yyval, &yyvsp[-1], &yyvsp[0]};
                                                                 BUILDTREE(ExtDef, 2);
                                                             }
-#line 1274 "syntax.tab.c"
+#line 1276 "syntax.tab.c"
     break;
 
   case 7: /* ExtDef: Specifier FunDec CompSt  */
-#line 46 "syntax.y"
+#line 47 "syntax.y"
                                                             {
                                                                 Node **args[8] = {&yyval, &yyvsp[-2], &yyvsp[-1], &yyvsp[0]};
                                                                 BUILDTREE(ExtDef, 3);
                                                             }
-#line 1283 "syntax.tab.c"
+#line 1285 "syntax.tab.c"
     break;
 
   case 8: /* ExtDef: Specifier FunDec SEMI  */
-#line 50 "syntax.y"
+#line 51 "syntax.y"
                                                             {
                                                                 Node **args[8] = {&yyval, &yyvsp[-2], &yyvsp[-1], &yyvsp[0]};
                                                                 BUILDTREE(ExtDef, 3);
                                                             }
-#line 1292 "syntax.tab.c"
+#line 1294 "syntax.tab.c"
     break;
 
   case 9: /* ExtDef: Specifier error SEMI  */
-#line 54 "syntax.y"
+#line 55 "syntax.y"
                                                             {}
-#line 1298 "syntax.tab.c"
+#line 1300 "syntax.tab.c"
     break;
 
   case 10: /* ExtDef: error CompSt  */
-#line 55 "syntax.y"
+#line 56 "syntax.y"
                                                             {}
-#line 1304 "syntax.tab.c"
+#line 1306 "syntax.tab.c"
     break;
 
   case 11: /* ExtDecList: VarDec  */
-#line 57 "syntax.y"
+#line 58 "syntax.y"
                                                             {
                                                                 Node **args[8] = {&yyval, &yyvsp[0]};
                                                                 BUILDTREE(ExtDecList, 1);
                                                             }
-#line 1313 "syntax.tab.c"
+#line 1315 "syntax.tab.c"
     break;
 
   case 12: /* ExtDecList: VarDec COMMA ExtDecList  */
-#line 61 "syntax.y"
+#line 62 "syntax.y"
                                                             {
                                                                 Node **args[8] = {&yyval, &yyvsp[-2], &yyvsp[-1], &yyvsp[0]};
                                                                 BUILDTREE(ExtDecList, 3);
                                                             }
-#line 1322 "syntax.tab.c"
+#line 1324 "syntax.tab.c"
     break;
 
   case 13: /* Specifier: TYPE  */
-#line 66 "syntax.y"
+#line 67 "syntax.y"
                                                             {
                                                                 Node **args[8] = {&yyval, &yyvsp[0]};
                                                                 BUILDTREE(Specifier, 1);
                                                             }
-#line 1331 "syntax.tab.c"
+#line 1333 "syntax.tab.c"
     break;
 
   case 14: /* Specifier: StructSpecifier  */
-#line 70 "syntax.y"
+#line 71 "syntax.y"
                                                             {
                                                                 Node **args[8] = {&yyval, &yyvsp[0]};
                                                                 BUILDTREE(Specifier, 1);
                                                             }
-#line 1340 "syntax.tab.c"
+#line 1342 "syntax.tab.c"
     break;
 
   case 15: /* StructSpecifier: STRUCT OptTag LC DefList RC  */
-#line 75 "syntax.y"
+#line 76 "syntax.y"
                                                             {
                                                                 Node **args[8] = {&yyval, &yyvsp[-4], &yyvsp[-3], &yyvsp[-2], &yyvsp[-1], &yyvsp[0]};
                                                                 BUILDTREE(StructSpecifier, 5);
                                                             }
-#line 1349 "syntax.tab.c"
+#line 1351 "syntax.tab.c"
     break;
 
   case 16: /* StructSpecifier: STRUCT Tag  */
-#line 79 "syntax.y"
+#line 80 "syntax.y"
                                                             {
                                                                 Node **args[8] = {&yyval, &yyvsp[-1], &yyvsp[0]};
                                                                 BUILDTREE(StructSpecifier, 2);
                                                             }
-#line 1358 "syntax.tab.c"
+#line 1360 "syntax.tab.c"
     break;
 
   case 17: /* OptTag: ID  */
-#line 84 "syntax.y"
+#line 85 "syntax.y"
                                                             {
                                                                 Node **args[8] = {&yyval, &yyvsp[0]};
                                                                 BUILDTREE(OptTag, 1);
                                                             }
-#line 1367 "syntax.tab.c"
+#line 1369 "syntax.tab.c"
     break;
 
   case 18: /* OptTag: %empty  */
-#line 88 "syntax.y"
+#line 89 "syntax.y"
                                                             {   yyval = NULL; }
-#line 1373 "syntax.tab.c"
+#line 1375 "syntax.tab.c"
     break;
 
   case 19: /* Tag: ID  */
-#line 90 "syntax.y"
+#line 91 "syntax.y"
                                                             {
                                                                 Node **args[8] = {&yyval, &yyvsp[0]};
                                                                 BUILDTREE(Tag, 1);
                                                             }
-#line 1382 "syntax.tab.c"
+#line 1384 "syntax.tab.c"
     break;
 
   case 20: /* VarDec: ID  */
-#line 95 "syntax.y"
+#line 96 "syntax.y"
                                                             {
                                                                 Node **args[8] = {&yyval, &yyvsp[0]};
                                                                 BUILDTREE(VarDec, 1);
                                                             }
-#line 1391 "syntax.tab.c"
+#line 1393 "syntax.tab.c"
     break;
 
   case 21: /* VarDec: VarDec LB INT RB  */
-#line 99 "syntax.y"
+#line 100 "syntax.y"
                                                             {
                                                                 Node **args[8] = {&yyval, &yyvsp[-3], &yyvsp[-2], &yyvsp[-1], &yyvsp[0]};
                                                                 BUILDTREE(VarDec, 4);
                                                             }
-#line 1400 "syntax.tab.c"
+#line 1402 "syntax.tab.c"
     break;
 
   case 22: /* VarDec: error RB  */
-#line 103 "syntax.y"
+#line 104 "syntax.y"
                                                             {}
-#line 1406 "syntax.tab.c"
+#line 1408 "syntax.tab.c"
     break;
 
   case 23: /* FunDec: ID LP VarList RP  */
-#line 105 "syntax.y"
+#line 106 "syntax.y"
                                                             {
                                                                 Node **args[8] = {&yyval, &yyvsp[-3], &yyvsp[-2], &yyvsp[-1], &yyvsp[0]};
                                                                 BUILDTREE(FunDec, 4);
                                                             }
-#line 1415 "syntax.tab.c"
+#line 1417 "syntax.tab.c"
     break;
 
   case 24: /* FunDec: ID LP RP  */
-#line 109 "syntax.y"
+#line 110 "syntax.y"
                                                             {
                                                                 Node **args[8] = {&yyval, &yyvsp[-2], &yyvsp[-1], &yyvsp[0]};
                                                                 BUILDTREE(FunDec, 3);
                                                             }
-#line 1424 "syntax.tab.c"
+#line 1426 "syntax.tab.c"
     break;
 
   case 25: /* FunDec: error RP  */
-#line 113 "syntax.y"
+#line 114 "syntax.y"
                                                             {}
-#line 1430 "syntax.tab.c"
+#line 1432 "syntax.tab.c"
     break;
 
   case 26: /* VarList: ParamDec COMMA VarList  */
-#line 115 "syntax.y"
+#line 116 "syntax.y"
                                                             {
                                                                 Node **args[8] = {&yyval, &yyvsp[-2], &yyvsp[-1], &yyvsp[0]};
                                                                 BUILDTREE(VarList, 3);
                                                             }
-#line 1439 "syntax.tab.c"
+#line 1441 "syntax.tab.c"
     break;
 
   case 27: /* VarList: ParamDec  */
-#line 119 "syntax.y"
+#line 120 "syntax.y"
                                                             {
                                                                 Node **args[8] = {&yyval, &yyvsp[0]};
                                                                 BUILDTREE(VarList, 1);
                                                             }
-#line 1448 "syntax.tab.c"
+#line 1450 "syntax.tab.c"
     break;
 
   case 28: /* ParamDec: Specifier VarDec  */
-#line 124 "syntax.y"
+#line 125 "syntax.y"
                                                             {
                                                                 Node **args[8] = {&yyval, &yyvsp[-1], &yyvsp[0]};
                                                                 BUILDTREE(ParamDec, 2);
                                                             }
-#line 1457 "syntax.tab.c"
+#line 1459 "syntax.tab.c"
     break;
 
   case 29: /* CompSt: LC DefList StmtList RC  */
-#line 129 "syntax.y"
+#line 130 "syntax.y"
                                                             {
                                                                 Node **args[8] = {&yyval, &yyvsp[-3], &yyvsp[-2], &yyvsp[-1], &yyvsp[0]};
                                                                 BUILDTREE(CompSt, 4);
                                                             }
-#line 1466 "syntax.tab.c"
+#line 1468 "syntax.tab.c"
     break;
 
   case 30: /* CompSt: error RC  */
-#line 133 "syntax.y"
+#line 134 "syntax.y"
                                                             {}
-#line 1472 "syntax.tab.c"
+#line 1474 "syntax.tab.c"
     break;
 
   case 31: /* StmtList: Stmt StmtList  */
-#line 135 "syntax.y"
+#line 136 "syntax.y"
                                                             {
                                                                 Node **args[8] = {&yyval, &yyvsp[-1], &yyvsp[0]};
                                                                 BUILDTREE(StmtList, 2);
                                                             }
-#line 1481 "syntax.tab.c"
+#line 1483 "syntax.tab.c"
     break;
 
   case 32: /* StmtList: %empty  */
-#line 139 "syntax.y"
+#line 140 "syntax.y"
                                                             {   yyval = NULL; }
-#line 1487 "syntax.tab.c"
+#line 1489 "syntax.tab.c"
     break;
 
   case 33: /* Stmt: Exp SEMI  */
-#line 141 "syntax.y"
+#line 142 "syntax.y"
                                                             {
                                                                 Node **args[8] = {&yyval, &yyvsp[-1], &yyvsp[0]};
                                                                 BUILDTREE(Stmt, 2);
                                                             }
-#line 1496 "syntax.tab.c"
+#line 1498 "syntax.tab.c"
     break;
 
   case 34: /* Stmt: CompSt  */
-#line 145 "syntax.y"
+#line 146 "syntax.y"
                                                             {
                                                                 Node **args[8] = {&yyval, &yyvsp[0]};
                                                                 BUILDTREE(Stmt, 1);
                                                             }
-#line 1505 "syntax.tab.c"
+#line 1507 "syntax.tab.c"
     break;
 
   case 35: /* Stmt: RETURN Exp SEMI  */
-#line 149 "syntax.y"
+#line 150 "syntax.y"
                                                             {
                                                                 Node **args[8] = {&yyval, &yyvsp[-2], &yyvsp[-1], &yyvsp[0]};
                                                                 BUILDTREE(Stmt, 3);
                                                             }
-#line 1514 "syntax.tab.c"
+#line 1516 "syntax.tab.c"
     break;
 
   case 36: /* Stmt: IF LP Exp RP Stmt  */
-#line 154 "syntax.y"
+#line 155 "syntax.y"
                                                             {
                                                                 Node **args[8] = {&yyval, &yyvsp[-4], &yyvsp[-3], &yyvsp[-2], &yyvsp[-1], &yyvsp[0]};
                                                                 BUILDTREE(Stmt, 5);
                                                             }
-#line 1523 "syntax.tab.c"
+#line 1525 "syntax.tab.c"
     break;
 
   case 37: /* Stmt: IF LP Exp RP Stmt ELSE Stmt  */
-#line 158 "syntax.y"
+#line 159 "syntax.y"
                                                             {
                                                                 Node **args[8] = {&yyval, &yyvsp[-6], &yyvsp[-5], &yyvsp[-4], &yyvsp[-3], &yyvsp[-2], &yyvsp[-1], &yyvsp[0]};
                                                                 BUILDTREE(Stmt, 7);
                                                             }
-#line 1532 "syntax.tab.c"
+#line 1534 "syntax.tab.c"
     break;
 
   case 38: /* Stmt: WHILE LP Exp RP Stmt  */
-#line 162 "syntax.y"
+#line 163 "syntax.y"
                                                             {
                                                                 Node **args[8] = {&yyval, &yyvsp[-4], &yyvsp[-3], &yyvsp[-2], &yyvsp[-1], &yyvsp[0]};
                                                                 BUILDTREE(Stmt, 5);
                                                             }
-#line 1541 "syntax.tab.c"
+#line 1543 "syntax.tab.c"
     break;
 
   case 39: /* Stmt: error SEMI  */
-#line 166 "syntax.y"
+#line 167 "syntax.y"
                                                             {}
-#line 1547 "syntax.tab.c"
+#line 1549 "syntax.tab.c"
     break;
 
   case 40: /* Stmt: error Stmt  */
-#line 167 "syntax.y"
+#line 168 "syntax.y"
                                                             {}
-#line 1553 "syntax.tab.c"
+#line 1555 "syntax.tab.c"
     break;
 
   case 41: /* Stmt: WHILE error RP Stmt  */
-#line 168 "syntax.y"
+#line 169 "syntax.y"
                                                             {}
-#line 1559 "syntax.tab.c"
+#line 1561 "syntax.tab.c"
     break;
 
   case 42: /* Stmt: IF error RP Stmt  */
-#line 170 "syntax.y"
+#line 171 "syntax.y"
                                                             {}
-#line 1565 "syntax.tab.c"
+#line 1567 "syntax.tab.c"
     break;
 
   case 43: /* Stmt: IF error RP Stmt ELSE Stmt  */
-#line 171 "syntax.y"
+#line 172 "syntax.y"
                                                             {}
-#line 1571 "syntax.tab.c"
+#line 1573 "syntax.tab.c"
     break;
 
   case 44: /* DefList: Def DefList  */
-#line 173 "syntax.y"
+#line 174 "syntax.y"
                                                             {
                                                                 Node **args[8] = {&yyval, &yyvsp[-1], &yyvsp[0]};
                                                                 BUILDTREE(DefList, 2);
                                                             }
-#line 1580 "syntax.tab.c"
+#line 1582 "syntax.tab.c"
     break;
 
   case 45: /* DefList: %empty  */
-#line 177 "syntax.y"
+#line 178 "syntax.y"
                                                             {   yyval = NULL; }
-#line 1586 "syntax.tab.c"
+#line 1588 "syntax.tab.c"
     break;
 
   case 46: /* Def: Specifier DecList SEMI  */
-#line 179 "syntax.y"
+#line 180 "syntax.y"
                                                             {
                                                                 Node **args[8] = {&yyval, &yyvsp[-2], &yyvsp[-1], &yyvsp[0]};
                                                                 BUILDTREE(Def, 3);
                                                             }
-#line 1595 "syntax.tab.c"
+#line 1597 "syntax.tab.c"
     break;
 
   case 47: /* Def: Specifier error SEMI  */
-#line 183 "syntax.y"
+#line 184 "syntax.y"
                                                             {}
-#line 1601 "syntax.tab.c"
+#line 1603 "syntax.tab.c"
     break;
 
   case 48: /* DecList: Dec  */
-#line 185 "syntax.y"
+#line 186 "syntax.y"
                                                             {
                                                                 Node **args[8] = {&yyval, &yyvsp[0]};
                                                                 BUILDTREE(DecList, 1);
                                                             }
-#line 1610 "syntax.tab.c"
+#line 1612 "syntax.tab.c"
     break;
 
   case 49: /* DecList: Dec COMMA DecList  */
-#line 189 "syntax.y"
+#line 190 "syntax.y"
                                                             {
                                                                 Node **args[8] = {&yyval, &yyvsp[-2], &yyvsp[-1], &yyvsp[0]};
                                                                 BUILDTREE(DecList, 3);
                                                             }
-#line 1619 "syntax.tab.c"
+#line 1621 "syntax.tab.c"
     break;
 
   case 50: /* Dec: VarDec  */
-#line 194 "syntax.y"
+#line 195 "syntax.y"
                                                             {
                                                                 Node **args[8] = {&yyval, &yyvsp[0]};
                                                                 BUILDTREE(Dec, 1);
                                                             }
-#line 1628 "syntax.tab.c"
+#line 1630 "syntax.tab.c"
     break;
 
   case 51: /* Dec: VarDec ASSIGNOP Exp  */
-#line 198 "syntax.y"
+#line 199 "syntax.y"
                                                             {
                                                                 Node **args[8] = {&yyval, &yyvsp[-2], &yyvsp[-1], &yyvsp[0]};
                                                                 BUILDTREE(Dec, 3);
                                                             }
-#line 1637 "syntax.tab.c"
+#line 1639 "syntax.tab.c"
     break;
 
   case 52: /* Exp: Exp ASSIGNOP Exp  */
-#line 203 "syntax.y"
+#line 204 "syntax.y"
                                                             {
                                                                 Node **args[8] = {&yyval, &yyvsp[-2], &yyvsp[-1], &yyvsp[0]};
                                                                 BUILDTREE(Exp, 3);
                                                             }
-#line 1646 "syntax.tab.c"
+#line 1648 "syntax.tab.c"
     break;
 
   case 53: /* Exp: Exp AND Exp  */
-#line 207 "syntax.y"
+#line 208 "syntax.y"
                                                             {
                                                                 Node **args[8] = {&yyval, &yyvsp[-2], &yyvsp[-1], &yyvsp[0]};
                                                                 BUILDTREE(Exp, 3);
                                                             }
-#line 1655 "syntax.tab.c"
+#line 1657 "syntax.tab.c"
     break;
 
   case 54: /* Exp: Exp OR Exp  */
-#line 211 "syntax.y"
+#line 212 "syntax.y"
                                                             {
                                                                 Node **args[8] = {&yyval, &yyvsp[-2], &yyvsp[-1], &yyvsp[0]};
                                                                 BUILDTREE(Exp, 3);
                                                             }
-#line 1664 "syntax.tab.c"
+#line 1666 "syntax.tab.c"
     break;
 
   case 55: /* Exp: Exp RELOP Exp  */
-#line 215 "syntax.y"
+#line 216 "syntax.y"
                                                             {
                                                                 Node **args[8] = {&yyval, &yyvsp[-2], &yyvsp[-1], &yyvsp[0]};
                                                                 BUILDTREE(Exp, 3);
                                                             }
-#line 1673 "syntax.tab.c"
+#line 1675 "syntax.tab.c"
     break;
 
   case 56: /* Exp: Exp PLUS Exp  */
-#line 219 "syntax.y"
+#line 220 "syntax.y"
                                                             {
                                                                 Node **args[8] = {&yyval, &yyvsp[-2], &yyvsp[-1], &yyvsp[0]};
                                                                 BUILDTREE(Exp, 3);
                                                             }
-#line 1682 "syntax.tab.c"
+#line 1684 "syntax.tab.c"
     break;
 
   case 57: /* Exp: Exp MINUS Exp  */
-#line 223 "syntax.y"
+#line 224 "syntax.y"
                                                             {
                                                                 Node **args[8] = {&yyval, &yyvsp[-2], &yyvsp[-1], &yyvsp[0]};
                                                                 BUILDTREE(Exp, 3);
                                                             }
-#line 1691 "syntax.tab.c"
+#line 1693 "syntax.tab.c"
     break;
 
   case 58: /* Exp: Exp STAR Exp  */
-#line 227 "syntax.y"
+#line 228 "syntax.y"
                                                             {
                                                                 Node **args[8] = {&yyval, &yyvsp[-2], &yyvsp[-1], &yyvsp[0]};
                                                                 BUILDTREE(Exp, 3);
                                                             }
-#line 1700 "syntax.tab.c"
+#line 1702 "syntax.tab.c"
     break;
 
   case 59: /* Exp: Exp DIV Exp  */
-#line 231 "syntax.y"
+#line 232 "syntax.y"
                                                             {
                                                                 Node **args[8] = {&yyval, &yyvsp[-2], &yyvsp[-1], &yyvsp[0]};
                                                                 BUILDTREE(Exp, 3);
                                                             }
-#line 1709 "syntax.tab.c"
+#line 1711 "syntax.tab.c"
     break;
 
   case 60: /* Exp: LP Exp RP  */
-#line 235 "syntax.y"
+#line 236 "syntax.y"
                                                             {
                                                                 Node **args[8] = {&yyval, &yyvsp[-2], &yyvsp[-1], &yyvsp[0]};
                                                                 BUILDTREE(Exp, 3);
                                                             }
-#line 1718 "syntax.tab.c"
+#line 1720 "syntax.tab.c"
     break;
 
   case 61: /* Exp: MINUS Exp  */
-#line 239 "syntax.y"
+#line 240 "syntax.y"
                                                             {
                                                                 Node **args[8] = {&yyval, &yyvsp[-1], &yyvsp[0]};
                                                                 BUILDTREE(Exp, 2);
                                                             }
-#line 1727 "syntax.tab.c"
+#line 1729 "syntax.tab.c"
     break;
 
   case 62: /* Exp: NOT Exp  */
-#line 243 "syntax.y"
+#line 244 "syntax.y"
                                                             {
                                                                 Node **args[8] = {&yyval, &yyvsp[-1], &yyvsp[0]};
                                                                 BUILDTREE(Exp, 2);
                                                             }
-#line 1736 "syntax.tab.c"
+#line 1738 "syntax.tab.c"
     break;
 
   case 63: /* Exp: ID LP Args RP  */
-#line 247 "syntax.y"
+#line 248 "syntax.y"
                                                             {
                                                                 Node **args[8] = {&yyval, &yyvsp[-3], &yyvsp[-2], &yyvsp[-1], &yyvsp[0]};
                                                                 BUILDTREE(Exp, 4);
                                                             }
-#line 1745 "syntax.tab.c"
+#line 1747 "syntax.tab.c"
     break;
 
   case 64: /* Exp: ID LP RP  */
-#line 251 "syntax.y"
+#line 252 "syntax.y"
                                                             {
                                                                 Node **args[8] = {&yyval, &yyvsp[-2], &yyvsp[-1], &yyvsp[0]};
                                                                 BUILDTREE(Exp, 3);
                                                             }
-#line 1754 "syntax.tab.c"
+#line 1756 "syntax.tab.c"
     break;
 
   case 65: /* Exp: Exp LB Exp RB  */
-#line 255 "syntax.y"
+#line 256 "syntax.y"
                                                             {
                                                                 Node **args[8] = {&yyval, &yyvsp[-3], &yyvsp[-2], &yyvsp[-1], &yyvsp[0]};
                                                                 BUILDTREE(Exp, 4);
                                                             }
-#line 1763 "syntax.tab.c"
+#line 1765 "syntax.tab.c"
     break;
 
   case 66: /* Exp: Exp DOT ID  */
-#line 259 "syntax.y"
+#line 260 "syntax.y"
                                                             {
                                                                 Node **args[8] = {&yyval, &yyvsp[-2], &yyvsp[-1], &yyvsp[0]};
                                                                 BUILDTREE(Exp, 3);
                                                             }
-#line 1772 "syntax.tab.c"
+#line 1774 "syntax.tab.c"
     break;
 
   case 67: /* Exp: ID  */
-#line 263 "syntax.y"
+#line 264 "syntax.y"
                                                             {
                                                                 Node **args[8] = {&yyval, &yyvsp[0]};
                                                                 BUILDTREE(Exp, 1);
                                                             }
-#line 1781 "syntax.tab.c"
+#line 1783 "syntax.tab.c"
     break;
 
   case 68: /* Exp: INT  */
-#line 267 "syntax.y"
+#line 268 "syntax.y"
                                                             {
                                                                 Node **args[8] = {&yyval, &yyvsp[0]};
                                                                 BUILDTREE(Exp, 1);
                                                             }
-#line 1790 "syntax.tab.c"
+#line 1792 "syntax.tab.c"
     break;
 
   case 69: /* Exp: FLOAT  */
-#line 271 "syntax.y"
+#line 272 "syntax.y"
                                                             {
                                                                 Node **args[8] = {&yyval, &yyvsp[0]};
                                                                 BUILDTREE(Exp, 1);
                                                             }
-#line 1799 "syntax.tab.c"
+#line 1801 "syntax.tab.c"
     break;
 
   case 70: /* Args: Exp COMMA Args  */
-#line 276 "syntax.y"
+#line 277 "syntax.y"
                                                             {
                                                                 Node **args[8] = {&yyval, &yyvsp[-2], &yyvsp[-1], &yyvsp[0]};
                                                                 BUILDTREE(Args, 3);
                                                             }
-#line 1808 "syntax.tab.c"
+#line 1810 "syntax.tab.c"
     break;
 
   case 71: /* Args: Exp  */
-#line 280 "syntax.y"
+#line 281 "syntax.y"
                                                             {
                                                                 Node **args[8] = {&yyval, &yyvsp[0]};
                                                                 BUILDTREE(Args, 1);
                                                             }
-#line 1817 "syntax.tab.c"
+#line 1819 "syntax.tab.c"
     break;
 
 
-#line 1821 "syntax.tab.c"
+#line 1823 "syntax.tab.c"
 
       default: break;
     }
@@ -2010,7 +2012,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 285 "syntax.y"
+#line 286 "syntax.y"
 
 void yyerror(char *msg) {
     add_error(yylineno);
