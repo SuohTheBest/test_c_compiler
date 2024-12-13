@@ -1,0 +1,88 @@
+FUNCTION main :
+t0 := #1
+t1 := #2
+IF t0 == t1 GOTO label0
+GOTO label1
+LABEL label0 :
+t3 := #1
+t4 := #0
+t2 := t3 / t4
+WRITE t2
+t_ := #0
+t7 := a
+t8 := #998244353
+t9 := t8 * #4
+t5 := t7 + t9
+t6 := #100
+*t5 := t6
+t_ := *t5
+t12 := a
+t13 := #998244353
+t14 := t13 * #4
+t11 := t12 + t14
+t10 := *t11
+WRITE t10
+t_ := #0
+t15 := #0
+i := t15
+t_ := i
+LABEL label3 :
+t16 := #1
+IF t16 != #0 GOTO label4
+GOTO label5
+LABEL label4 :
+t19 := a
+t20 := i
+t21 := t20 * #4
+t17 := t19 + t21
+t24 := i
+t25 := #1
+t22 := t24 + t25
+t27 := a
+t29 := i
+t30 := #1
+t28 := t29 - t30
+t31 := t28 * #4
+t26 := t27 + t31
+t23 := *t26
+t18 := t22 + t23
+*t17 := t18
+t_ := *t17
+t33 := i
+t34 := #1
+t32 := t33 + t34
+i := t32
+t_ := i
+t37 := a
+t38 := i
+t39 := t38 * #4
+t36 := t37 + t39
+t35 := *t36
+WRITE t35
+t_ := #0
+GOTO label3
+LABEL label5 :
+t42 := a
+t44 := #999999
+t43 := #0 - t44
+t45 := t43 * #4
+t40 := t42 + t45
+t41 := #87
+*t40 := t41
+t_ := *t40
+t48 := a
+t50 := #999999
+t49 := #0 - t50
+t51 := t49 * #4
+t47 := t48 + t51
+t46 := *t47
+WRITE t46
+t_ := #0
+GOTO label2
+LABEL label1 :
+t52 := #0
+WRITE t52
+t_ := #0
+LABEL label2 :
+t53 := #0
+RETURN t53

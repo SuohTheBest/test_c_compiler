@@ -39,4 +39,4 @@ parsing_d:
 	$(target) ./TestCases/Smoke.cmm 2> ./MakeOut/debug_log
 
 test: all
-	./nju-compiler-test/lab4/run.sh -r /home/lu/workspace/Compiler_code/MakeOut/compiler -e base -l 4
+	cd ./nju-compiler-test/lab4 && ./run.sh -r ../../MakeOut/compiler -e base -l 4

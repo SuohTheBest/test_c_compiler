@@ -1,0 +1,250 @@
+FUNCTION bit_and :
+PARAM aop1
+PARAM aop2
+t0 := aop1
+t1 := #0
+IF t0 == t1 GOTO label0
+GOTO label1
+LABEL label0 :
+t2 := #0
+RETURN t2
+GOTO label2
+LABEL label1 :
+t3 := aop2
+RETURN t3
+LABEL label2 :
+
+FUNCTION bit_or :
+PARAM oop1
+PARAM oop2
+t4 := oop1
+t5 := #0
+IF t4 == t5 GOTO label3
+GOTO label4
+LABEL label3 :
+t6 := oop2
+RETURN t6
+GOTO label5
+LABEL label4 :
+t7 := #1
+RETURN t7
+LABEL label5 :
+
+FUNCTION bit_not :
+PARAM nop
+t8 := nop
+t9 := #0
+IF t8 == t9 GOTO label6
+GOTO label7
+LABEL label6 :
+t10 := #1
+RETURN t10
+GOTO label8
+LABEL label7 :
+t11 := #0
+RETURN t11
+LABEL label8 :
+
+FUNCTION mod :
+PARAM mop1
+PARAM mop2
+t13 := mop1
+t17 := mop1
+t18 := mop2
+t15 := t17 / t18
+t16 := mop2
+t14 := t15 * t16
+t12 := t13 - t14
+RETURN t12
+
+FUNCTION and :
+PARAM m
+PARAM n
+t19 := #32
+isize := t19
+DEC t20 128
+am := &t20
+DEC t21 128
+an := &t21
+DEC t22 128
+res := &t22
+t23 := #0
+i := t23
+t24 := #0
+mn := t24
+t25 := m
+t26 := #0
+IF t25 <= t26 GOTO label9
+GOTO label12
+LABEL label12 :
+t27 := n
+t28 := #0
+IF t27 <= t28 GOTO label9
+GOTO label10
+LABEL label9 :
+t29 := #0
+RETURN t29
+LABEL label10 :
+LABEL label13 :
+t30 := i
+t31 := isize
+IF t30 < t31 GOTO label14
+GOTO label15
+LABEL label14 :
+t34 := am
+t35 := i
+t36 := t35 * #4
+t32 := t34 + t36
+t33 := #0
+*t32 := t33
+t_ := *t32
+t39 := an
+t40 := i
+t41 := t40 * #4
+t37 := t39 + t41
+t38 := #0
+*t37 := t38
+t_ := *t37
+t44 := res
+t45 := i
+t46 := t45 * #4
+t42 := t44 + t46
+t43 := #0
+*t42 := t43
+t_ := *t42
+t48 := i
+t49 := #1
+t47 := t48 + t49
+i := t47
+t_ := i
+GOTO label13
+LABEL label15 :
+t50 := #0
+i := t50
+t_ := i
+LABEL label16 :
+t51 := i
+t52 := isize
+IF t51 < t52 GOTO label17
+GOTO label18
+LABEL label17 :
+t55 := am
+t56 := i
+t57 := t56 * #4
+t53 := t55 + t57
+t58 := m
+t59 := #2
+ARG t59
+ARG t58
+t54 := CALL mod
+*t53 := t54
+t_ := *t53
+t62 := an
+t63 := i
+t64 := t63 * #4
+t60 := t62 + t64
+t65 := n
+t66 := #2
+ARG t66
+ARG t65
+t61 := CALL mod
+*t60 := t61
+t_ := *t60
+t68 := m
+t69 := #2
+t67 := t68 / t69
+m := t67
+t_ := m
+t71 := n
+t72 := #2
+t70 := t71 / t72
+n := t70
+t_ := n
+t74 := i
+t75 := #1
+t73 := t74 + t75
+i := t73
+t_ := i
+GOTO label16
+LABEL label18 :
+t76 := #0
+i := t76
+t_ := i
+LABEL label19 :
+t77 := i
+t78 := isize
+IF t77 < t78 GOTO label20
+GOTO label21
+LABEL label20 :
+t81 := res
+t82 := i
+t83 := t82 * #4
+t79 := t81 + t83
+t86 := am
+t87 := i
+t88 := t87 * #4
+t85 := t86 + t88
+t84 := *t85
+t91 := an
+t92 := i
+t93 := t92 * #4
+t90 := t91 + t93
+t89 := *t90
+ARG t89
+ARG t84
+t80 := CALL bit_and
+*t79 := t80
+t_ := *t79
+t95 := i
+t96 := #1
+t94 := t95 + t96
+i := t94
+t_ := i
+GOTO label19
+LABEL label21 :
+t98 := isize
+t99 := #1
+t97 := t98 - t99
+i := t97
+t_ := i
+LABEL label22 :
+t100 := i
+t101 := #0
+IF t100 >= t101 GOTO label23
+GOTO label24
+LABEL label23 :
+t105 := mn
+t106 := #2
+t103 := t105 * t106
+t108 := res
+t109 := i
+t110 := t109 * #4
+t107 := t108 + t110
+t104 := *t107
+t102 := t103 + t104
+mn := t102
+t_ := mn
+t112 := i
+t113 := #1
+t111 := t112 - t113
+i := t111
+t_ := i
+GOTO label22
+LABEL label24 :
+t114 := mn
+RETURN t114
+
+FUNCTION main :
+READ t115
+x := t115
+READ t116
+y := t116
+t118 := x
+t119 := y
+ARG t119
+ARG t118
+t117 := CALL and
+WRITE t117
+t_ := #0
+t120 := #0
+RETURN t120
