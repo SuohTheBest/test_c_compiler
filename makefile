@@ -11,7 +11,9 @@ clean:
 	rm -rf ./MakeOut
 
 parsing:
-	mkdir MakeOut
+	if [ ! -d "MakeOut" ]; then \
+        mkdir MakeOut; \
+    fi
 	bison -d syntax.y
 	lex lexical.l
 

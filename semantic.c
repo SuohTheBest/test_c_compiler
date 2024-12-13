@@ -1,6 +1,7 @@
 #include "semantic.h"
 
 #define offset 17
+#define mapsize 1024
 char anonymous[] = "0_anonymous_";
 int anonymous_cnt = 0;
 int write_enable = 1;
@@ -33,7 +34,7 @@ unsigned hash_pjw(char *name) {
     unsigned val = 0, i;
     for (; *name; ++name) {
         val = (val << 2) + *name;
-        if ((i = val & ~0x400)) val = (val ^ (i >> 12)) & 0x400;
+        if ((i = val & ~mapsize)) val = (val ^ (i >> 12)) & mapsize;
     }
     return val;
 }
@@ -45,13 +46,17 @@ void sem_error(int kind, int lineno) {
     printf("Error type %d at Line %d: %s.\n", kind, lineno, sem_error_text[kind]);
 }
 
-sem_node sem_map[1024];
+sem_node sem_map[mapsize];
 
 int add_sem_node(char *name, Type type, int func_dec_lineno) {
     //    printf("add_sem_node:%s\n", name);
     //    printType(type);
     unsigned index = hash_pjw(name);
-    while (sem_map[index].name != NULL && strcmp(sem_map[index].name, name) != 0) index += offset;
+    unsigned index_old = index;
+    while (sem_map[index].name != NULL && strcmp(sem_map[index].name, name) != 0) {
+        index = (index + offset) % mapsize;
+        if (index == index_old)break;
+    }
     if (sem_map[index].name == NULL) {
         sem_map[index].name = name;
         sem_map[index].type = type;
@@ -77,8 +82,12 @@ FieldList create_tail_field(Type t) {
 
 sem_node *read_sem_node(char *name) {
     unsigned index = hash_pjw(name);
-    while (sem_map[index].name != NULL && strcmp(sem_map[index].name, name) != 0) index += offset;
-    if (sem_map[index].name == NULL)
+    unsigned index_old = index;
+    while (sem_map[index].name != NULL && strcmp(sem_map[index].name, name) != 0) {
+        index = (index + offset) % mapsize;
+        if (index == index_old)break;
+    }
+    if (sem_map[index].name == NULL || strcmp(sem_map[index].name, name) != 0)
         return NULL;
     else
         return &sem_map[index];
@@ -89,31 +98,31 @@ int typeEqual(Type t1, Type t2) {
     if (t1 == NULL || t2 == NULL) return 0;
     if (t1->kind != t2->kind) return 0;
     switch (t1->kind) {
-    case BASIC:
-        return t1->data.basic == t2->data.basic;
-    case ARRAY: {
-        while (t1->kind == ARRAY && t2->kind == ARRAY) {
-            t1 = t1->data.array.elem;
-            t2 = t2->data.array.elem;
-        }
-        return typeEqual(t1, t2);
-    }
-    case STRUCTURE: {
-        return t1 == t2;
-    }
-    case FUNCTION: {
-        FieldList f1 = t1->data.field, f2 = t2->data.field;
-        while (f1 && f2) {
-            if (!typeEqual(f1->type, f2->type)) {
-                return 0;
+        case BASIC:
+            return t1->data.basic == t2->data.basic;
+        case ARRAY: {
+            while (t1->kind == ARRAY && t2->kind == ARRAY) {
+                t1 = t1->data.array.elem;
+                t2 = t2->data.array.elem;
             }
-            f1 = f1->tail;
-            f2 = f2->tail;
+            return typeEqual(t1, t2);
         }
-        return f1 == NULL && f2 == NULL;
-    }
-    default:
-        return 0;
+        case STRUCTURE: {
+            return t1 == t2;
+        }
+        case FUNCTION: {
+            FieldList f1 = t1->data.field, f2 = t2->data.field;
+            while (f1 && f2) {
+                if (!typeEqual(f1->type, f2->type)) {
+                    return 0;
+                }
+                f1 = f1->tail;
+                f2 = f2->tail;
+            }
+            return f1 == NULL && f2 == NULL;
+        }
+        default:
+            return 0;
     }
 }
 
@@ -123,32 +132,32 @@ void printType(Type t) {
         return;
     }
     switch (t->kind) {
-    case BASIC:
-        if (t->data.basic)
-            printf("INT\n");
-        else
-            printf("FLOAT\n");
-        break;
-    case ARRAY:
-        printf("ARRAY : size = %d, element type = ", t->data.array.size);
-        printType(t->data.array.elem);
-        break;
-    case STRUCTURE:
-        printf("STRUCTURE :\n");
-        for (FieldList f = t->data.field; f; f = f->tail) {
-            printf("  Field name: %s, Field type: ", f->name);
-            printType(f->type);
-        }
-        break;
-    case FUNCTION:
-        printf("FUNCTION Type:\n");
-        for (FieldList f = t->data.field; f; f = f->tail) {
-            printf("  Parameter name: %s, Parameter type: ", f->name);
-            printType(f->type);
-        }
-        break;
-    default:
-        printf("Unknown Type\n");
+        case BASIC:
+            if (t->data.basic)
+                printf("INT\n");
+            else
+                printf("FLOAT\n");
+            break;
+        case ARRAY:
+            printf("ARRAY : size = %d, element type = ", t->data.array.size);
+            printType(t->data.array.elem);
+            break;
+        case STRUCTURE:
+            printf("STRUCTURE :\n");
+            for (FieldList f = t->data.field; f; f = f->tail) {
+                printf("  Field name: %s, Field type: ", f->name);
+                printType(f->type);
+            }
+            break;
+        case FUNCTION:
+            printf("FUNCTION Type:\n");
+            for (FieldList f = t->data.field; f; f = f->tail) {
+                printf("  Parameter name: %s, Parameter type: ", f->name);
+                printType(f->type);
+            }
+            break;
+        default:
+            printf("Unknown Type\n");
     }
 }
 
@@ -195,7 +204,7 @@ int semantic_analysis(Node *root) {
     add_sem_node("write", t_write, 0);
     sem_read_tree(root, NULL);
     // 检查声明未定义
-    for (int i = 0; i < 1024; ++i) {
+    for (int i = 0; i < mapsize; ++i) {
         if (sem_map[i].type && sem_map[i].type->kind == FUNCTION && sem_map[i].func_dec_lineno) {
             sem_error(18, sem_map[i].func_dec_lineno);
         }

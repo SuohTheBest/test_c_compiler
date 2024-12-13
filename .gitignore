@@ -7,3 +7,5 @@
 /syntax.tab.h
 /scanner
 /ts_out.ir
+/lex.yy.c
+/TestCases/Smoke.c
