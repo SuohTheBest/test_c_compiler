@@ -202,7 +202,6 @@ ir_list_node *generate_function(ir_list_node *code) {
 void generate_assign(ir_list_node *code) {
     char *line_str = my_strdup(code->line);
     char *token = next_token(line_str);
-    if (strcmp(token, "t_") == 0) return;
     char *var0 = token;
     token = next_token(NULL);
     token = next_token(NULL);
@@ -210,6 +209,7 @@ void generate_assign(ir_list_node *code) {
         generate_funcall(code);
         return;
     }
+    if (strcmp(var0, "t_") == 0) return;
     char *var1 = token;
     token = next_token(NULL);
     if (token == NULL) {
