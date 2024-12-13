@@ -1,6 +1,6 @@
-int factorial(int m){
+int factorial(int m) {
     int f_res = 1;
-    while(m > 1){
+    while (m > 1) {
         f_res = f_res * m;
         m = m - 1;
     }

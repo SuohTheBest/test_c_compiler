@@ -127,7 +127,9 @@ int var_add_tail(var_list_node *head, int size, char *name) {
 ir_list_node *generate_function(ir_list_node *code) {
     fprintf(out_put_file, "%s:\n", var_list->name);
 #ifdef _DEBUG
-    fprintf(out_put_file, "# function init\n");
+    fprintf(out_put_file, "#################\n"
+                          "# function init #\n"
+                          "#################\n");
 #endif
     int frame_size = var_list->size;
     fprintf(out_put_file, "addi    $sp, $sp, -%d\n"
@@ -139,7 +141,10 @@ ir_list_node *generate_function(ir_list_node *code) {
     while (code != NULL) {
         char *line_str = my_strdup(code->line);
 #ifdef _DEBUG
-        fprintf(out_put_file, "# code: %s\n", line_str);
+        fprintf(out_put_file, "################################\n"
+                              "# code: %s #\n"
+                              "################################\n",
+                line_str);
 #endif
         char *token = next_token(line_str);
         if (strcmp(token, "FUNCTION") == 0) break;
@@ -284,17 +289,17 @@ int reg(char *name) {
 }
 
 int var_offset(char *var_name) {
-    int offset = -8;
-    for (var_list_node *p = var_list; p != NULL; p = p->next) {
-        offset -= p->size;
-        if (strcmp(p->name, var_name) == 0)
-            return offset;
-    }
-    offset = 0;
+    int offset = 0;
     for (var_list_node *p = param_list; p != NULL; p = p->next) {
         if (strcmp(p->name, var_name) == 0)
             return offset;
         offset += p->size;
+    }
+    offset = -8;
+    for (var_list_node *p = var_list->next; p != NULL; p = p->next) {
+        offset -= p->size;
+        if (strcmp(p->name, var_name) == 0)
+            return offset;
     }
     assert(0);
     return offset;
