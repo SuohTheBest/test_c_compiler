@@ -1,14 +1,20 @@
-int factorial(int m) {
-    int f_res = 1;
-    while (m > 1) {
-        f_res = f_res * m;
-        m = m - 1;
-    }
-    return f_res;
-}
-
 int main() {
-    int n = read();
-    write(factorial(n));
+    int a[1];
+    if (1 == 2) {
+        int i;
+        write(1 / 0);
+        a[998244353] = 100;
+        write(a[998244353]);
+        i = 0;
+        while (1) {
+            a[i] = i + 1 + a[i - 1];
+            i = i + 1;
+            write(a[i]);
+        }
+        a[-999999] = 87;
+        write(a[-999999]);
+    } else {
+        write(0);
+    }
     return 0;
 }

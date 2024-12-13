@@ -443,13 +443,8 @@ char *get_arrLocation(Node *tree_node, char *place, Type *eleType) {
 char *get_mem(char *varName) {
     Type t = read_sem_node(varName)->type;
     int sz = size_of_arr(t);
-    if (sz == -1) {
-        ts_error_flag = 1;
-        return "";
-    }
-    if (sz == 4) {
-        return "";
-    }
+    if (sz == -1 && (ts_error_flag = 1)) return "";
+    if (t->kind != ARRAY) return "";
     char szs[32];
     sprintf(szs, "%d", sz);
     char *t1 = new_tmp();
