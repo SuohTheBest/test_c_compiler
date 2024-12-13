@@ -277,7 +277,10 @@ int reg(char *name) {
     if (name[0] == '*' || name[0] == '&')
         var_name = var_name + 1;
     int offset = var_offset(var_name);
-    if (name[0] == '*') {
+    if (offset == -1) {
+        fprintf(out_put_file, "li      $t%d, 0\n",
+                new_reg);
+    } else if (name[0] == '*') {
         fprintf(out_put_file, "lw      $t%d, %d($fp)\n"
                               "lw      $t%d, 0($t%d)\n",
                 new_reg, offset, new_reg, new_reg);
@@ -304,8 +307,7 @@ int var_offset(char *var_name) {
         if (strcmp(p->name, var_name) == 0)
             return offset;
     }
-    assert(0);
-    return offset;
+    return -1;
 }
 
 void re_reg(char *name, int reg, int need_write_back) {
@@ -313,6 +315,7 @@ void re_reg(char *name, int reg, int need_write_back) {
     if (!need_write_back || name[0] == '*' || name[0] == '&' || name[0] == '#')
         return;
     int offset = var_offset(name);
+    if (offset == -1) return;
     fprintf(out_put_file, "sw      $t%d, %d($fp)\n",
             reg, offset);
 }

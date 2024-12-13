@@ -22,7 +22,7 @@ cc_compile_d: parsing
 	$(CC) $(c_src) -g -D_DEBUG
 
 run:
-	$(target) ./TestCases/Smoke.c ./MakeOut/output.s
+	$(target) ./TestCases/Smoke.c ./MakeOut/output.s > ./MakeOut/compiler_stdout.txt
 
 pack:
 	rm -rf ./MakeOut/compiler.zip ./Code

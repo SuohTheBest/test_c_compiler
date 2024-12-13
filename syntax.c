@@ -58,6 +58,8 @@ int syntax_analysis(char *fileName) {
     yyparse();
     fclose(f);
     print_error();
-    // if (error_flag == 0) print_tree(tree_root, 0);
+#ifdef _DEBUG
+    if (error_flag == 0) print_tree(tree_root, 0);
+#endif
     return error_flag;
 }
