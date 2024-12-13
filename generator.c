@@ -125,7 +125,10 @@ int var_add_tail(var_list_node *head, int size, char *name) {
 }
 
 ir_list_node *generate_function(ir_list_node *code) {
-    fprintf(out_put_file, "%s:\n", var_list->name);
+    if (strcmp(var_list->name, "main") != 0)
+        fprintf(out_put_file, "fun_%s:\n", var_list->name);
+    else
+        fprintf(out_put_file, "%s:\n", var_list->name);
 #ifdef _DEBUG
     fprintf(out_put_file, "#################\n"
                           "# function init #\n"
@@ -344,7 +347,7 @@ ir_list_node *generate_funcall(ir_list_node *code) {
     token = next_token(NULL);
     token = next_token(NULL);
     char *fun_name = token;
-    fprintf(out_put_file, "jal     %s\n",
+    fprintf(out_put_file, "jal     fun_%s\n",
             fun_name);
     int reg0 = reg(val0);
     fprintf(out_put_file, "move    $t%d, $v0\n",
