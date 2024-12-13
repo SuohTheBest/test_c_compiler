@@ -347,8 +347,12 @@ ir_list_node *generate_funcall(ir_list_node *code) {
     token = next_token(NULL);
     token = next_token(NULL);
     char *fun_name = token;
-    fprintf(out_put_file, "jal     fun_%s\n",
-            fun_name);
+    if (strcmp(fun_name, "main") == 0)
+        fprintf(out_put_file, "jal     %s\n",
+                fun_name);
+    else
+        fprintf(out_put_file, "jal     fun_%s\n",
+                fun_name);
     int reg0 = reg(val0);
     fprintf(out_put_file, "move    $t%d, $v0\n",
             reg0);
